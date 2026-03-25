@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Button from "~/components/ui/Button.vue";
+import { Button } from "~/components/ui/button";
 import Card from "~/components/ui/Card.vue";
 import CardContent from "~/components/ui/CardContent.vue";
 import CardDescription from "~/components/ui/CardDescription.vue";

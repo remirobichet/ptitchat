@@ -2,6 +2,12 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-12-01",
   devtools: { enabled: true },
   modules: ["@nuxtjs/tailwindcss"],
+  components: [
+    {
+      path: "~/components",
+      extensions: ["vue"],
+    },
+  ],
   css: ["~/assets/css/main.css"],
   runtimeConfig: {
     pocketbaseAdminEmail: "",

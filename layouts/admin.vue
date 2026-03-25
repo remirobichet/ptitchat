@@ -1,43 +1,69 @@
 <script setup lang="ts">
-import Button from "~/components/ui/Button.vue";
-import Card from "~/components/ui/Card.vue";
-import CardContent from "~/components/ui/CardContent.vue";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "~/components/ui/breadcrumb";
+import { Separator } from "~/components/ui/separator";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "~/components/ui/sidebar";
+import type { CatRecord } from "~/types/models";
 
-type AdminNavItem = {
-  label: string;
-  to: string;
-};
-
+const pb = usePocketbase();
 const route = useRoute();
 const auth = useAuth();
 
-const mobileMenuOpen = ref(false);
-const userMenuOpen = ref(false);
+const selectedCatId = useState<string | null>("admin-selected-cat", () => null);
 
-const navItems: AdminNavItem[] = [
-  { label: "Overview", to: "/admin" },
-  { label: "Cats", to: "/admin/cats" },
-  { label: "Photos", to: "/admin/photos" },
-];
+const { data: cats } = await useAsyncData("admin-sidebar-cats", async () => {
+  const page = await pb
+    .collection("cats")
+    .getList<CatRecord>(1, 100, { sort: "+name" });
+  return page.items;
+});
 
 const userEmail = computed(() => auth.user.value?.email || "admin@ptitchat");
-const userInitial = computed(() => userEmail.value.charAt(0).toUpperCase());
 
 watch(
-  () => route.fullPath,
-  () => {
-    mobileMenuOpen.value = false;
-    userMenuOpen.value = false;
+  () => cats.value,
+  (value) => {
+    if (!selectedCatId.value && value?.length) {
+      selectedCatId.value = value[0].id;
+    }
   },
+  { immediate: true },
 );
 
-function isActive(path: string): boolean {
-  if (path === "/admin") {
-    return route.path === path;
+const selectedCatName = computed(() => {
+  if (!cats.value?.length) {
+    return null;
   }
 
-  return route.path === path || route.path.startsWith(`${path}/`);
-}
+  return (
+    cats.value.find((cat) => cat.id === selectedCatId.value)?.name ||
+    cats.value[0]?.name ||
+    null
+  );
+});
+
+const currentPageLabel = computed(() => {
+  if (route.path === "/admin") {
+    return "Dashboard";
+  }
+  if (route.path.startsWith("/admin/cats")) {
+    return "Cats";
+  }
+  if (route.path.startsWith("/admin/photos")) {
+    return "Photos";
+  }
+
+  return "Admin";
+});
 
 async function onLogout() {
   auth.logout();
@@ -46,122 +72,44 @@ async function onLogout() {
 </script>
 
 <template>
-  <div class="min-h-svh bg-muted/20">
-    <header
-      class="sticky top-0 z-30 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80"
-    >
-      <div class="container flex h-16 items-center justify-between gap-4">
-        <div class="flex items-center gap-6">
-          <NuxtLink to="/admin" class="text-base font-semibold tracking-tight"
-            >PtitChat Admin</NuxtLink
-          >
+  <SidebarProvider>
+    <AppSidebar
+      :cats="cats || []"
+      :selected-cat-id="selectedCatId"
+      :user-email="userEmail"
+      @update:selected-cat-id="selectedCatId = $event"
+      @logout="onLogout"
+    />
 
-          <nav class="hidden items-center gap-1 md:flex">
-            <NuxtLink
-              v-for="item in navItems"
-              :key="item.to"
-              :to="item.to"
-              class="rounded-md px-3 py-2 text-sm transition-colors"
-              :class="
-                isActive(item.to)
-                  ? 'bg-secondary text-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
-              "
-            >
-              {{ item.label }}
-            </NuxtLink>
-          </nav>
+    <SidebarInset>
+      <header
+        class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12"
+      >
+        <div class="flex items-center gap-2 px-4">
+          <SidebarTrigger class="-ml-1" />
+          <Separator
+            orientation="vertical"
+            class="mr-2 data-[orientation=vertical]:h-4"
+          />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem class="hidden md:block">
+                <span class="text-muted-foreground">
+                  {{ selectedCatName ? `${selectedCatName} team` : "Admin" }}
+                </span>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator class="hidden md:block" />
+              <BreadcrumbItem>
+                <BreadcrumbPage>{{ currentPageLabel }}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
         </div>
+      </header>
 
-        <div class="flex items-center gap-2">
-          <NuxtLink
-            to="/"
-            class="hidden text-sm text-muted-foreground transition-colors hover:text-foreground md:inline-flex"
-          >
-            View public site
-          </NuxtLink>
-
-          <div class="relative">
-            <Button
-              variant="outline"
-              size="sm"
-              class="gap-2"
-              @click="userMenuOpen = !userMenuOpen"
-            >
-              <span
-                class="flex h-6 w-6 items-center justify-center rounded-full bg-secondary text-xs font-medium text-secondary-foreground"
-              >
-                {{ userInitial }}
-              </span>
-              <span class="hidden max-w-32 truncate text-xs sm:inline">{{
-                userEmail
-              }}</span>
-            </Button>
-
-            <Card
-              v-if="userMenuOpen"
-              class="absolute right-0 top-11 w-56 border shadow-md"
-            >
-              <CardContent class="space-y-3 p-3">
-                <div>
-                  <p class="text-xs font-medium text-foreground">
-                    Signed in as
-                  </p>
-                  <p class="truncate text-xs text-muted-foreground">
-                    {{ userEmail }}
-                  </p>
-                </div>
-                <div class="grid gap-1">
-                  <NuxtLink
-                    to="/"
-                    class="rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                  >
-                    Public Gallery
-                  </NuxtLink>
-                  <button
-                    type="button"
-                    class="rounded-md px-2 py-1.5 text-left text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                    @click="onLogout"
-                  >
-                    Logout
-                  </button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Button
-            variant="outline"
-            size="sm"
-            class="md:hidden"
-            @click="mobileMenuOpen = !mobileMenuOpen"
-          >
-            Menu
-          </Button>
-        </div>
+      <div class="flex flex-1 flex-col gap-4 p-4 pt-0 md:p-6 md:pt-0">
+        <slot />
       </div>
-
-      <div v-if="mobileMenuOpen" class="border-t bg-background md:hidden">
-        <nav class="container grid gap-1 py-3">
-          <NuxtLink
-            v-for="item in navItems"
-            :key="item.to"
-            :to="item.to"
-            class="rounded-md px-3 py-2 text-sm transition-colors"
-            :class="
-              isActive(item.to)
-                ? 'bg-secondary text-foreground'
-                : 'text-muted-foreground hover:bg-accent hover:text-foreground'
-            "
-          >
-            {{ item.label }}
-          </NuxtLink>
-        </nav>
-      </div>
-    </header>
-
-    <main class="container py-6 md:py-8">
-      <slot />
-    </main>
-  </div>
+    </SidebarInset>
+  </SidebarProvider>
 </template>
