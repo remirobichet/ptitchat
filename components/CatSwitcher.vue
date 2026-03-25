@@ -93,7 +93,6 @@ function selectCat(catId: string) {
               {{ cat.name.charAt(0).toUpperCase() }}
             </div>
             {{ cat.name }}
-            <DropdownMenuShortcut>⌘{{ index + 1 }}</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem class="gap-2 p-2" as-child>
