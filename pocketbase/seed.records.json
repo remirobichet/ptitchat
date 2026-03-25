@@ -1,0 +1,32 @@
+{
+  "cats": [
+    {
+      "id": "cat_milo",
+      "name": "Milo",
+      "slug": "milo",
+      "description": "Playful orange cat who loves sun spots.",
+      "published": true
+    },
+    {
+      "id": "cat_nala",
+      "name": "Nala",
+      "slug": "nala",
+      "description": "Curious tuxedo cat with a dramatic meow.",
+      "published": true
+    }
+  ],
+  "photos": [
+    {
+      "cat": "cat_milo",
+      "caption": "Morning stretch",
+      "published": true,
+      "order": 1
+    },
+    {
+      "cat": "cat_nala",
+      "caption": "Window patrol",
+      "published": true,
+      "order": 1
+    }
+  ]
+}
