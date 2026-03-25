@@ -9,7 +9,6 @@ import { Input } from "~/components/ui/input";
 import Label from "~/components/ui/Label.vue";
 
 const auth = useAuth();
-
 const form = reactive({
   email: "",
   password: "",
@@ -24,7 +23,13 @@ async function onSubmit() {
 
   try {
     await auth.login(form.email, form.password);
-    await navigateTo("/admin");
+
+    if (import.meta.client) {
+      window.location.assign("/admin");
+      return;
+    }
+
+    await navigateTo("/admin", { replace: true });
   } catch (error) {
     errorMessage.value =
       error instanceof Error ? error.message : "Connexion impossible";

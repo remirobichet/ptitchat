@@ -51,12 +51,14 @@ const selectedCatName = computed(() => {
   );
 });
 
+const hasCats = computed(() => Boolean(cats.value?.length));
+
 const currentPageLabel = computed(() => {
-  if (route.path === "/admin") {
-    return "Tableau de bord";
+  if (route.path.startsWith("/admin/chat/new")) {
+    return "Nouveau chat";
   }
-  if (route.path.startsWith("/admin/cats")) {
-    return "Chats";
+  if (route.path.startsWith("/admin/chat")) {
+    return "Mon chat";
   }
   if (route.path.startsWith("/admin/photos")) {
     return "Photos";
@@ -64,6 +66,21 @@ const currentPageLabel = computed(() => {
 
   return "Administration";
 });
+
+watch(
+  () => [hasCats.value, route.path],
+  async ([hasAnyCats, path]) => {
+    if (!hasAnyCats && path !== "/admin/chat/new") {
+      await navigateTo("/admin/chat/new");
+      return;
+    }
+
+    if (hasAnyCats && path === "/admin") {
+      await navigateTo("/admin/chat");
+    }
+  },
+  { immediate: true },
+);
 
 async function onLogout() {
   auth.logout();

@@ -1,9 +1,22 @@
 <script setup lang="ts">
 const auth = useAuth();
 
-if (auth.isAuthenticated.value) {
-  await navigateTo("/admin");
-}
+watch(
+  () => auth.isAuthenticated.value,
+  (isAuthenticated) => {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    if (import.meta.client) {
+      window.location.replace("/admin");
+      return;
+    }
+
+    navigateTo("/admin", { replace: true });
+  },
+  { immediate: true },
+);
 </script>
 
 <template>

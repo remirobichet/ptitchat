@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Camera, Cat, LayoutDashboard } from "lucide-vue-next";
+import { Camera, Cat } from "lucide-vue-next";
 import {
   Sidebar,
   SidebarContent,
@@ -22,13 +22,8 @@ const emit = defineEmits<{
 
 const navMain = [
   {
-    title: "Tableau de bord",
-    url: "/admin",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Chats",
-    url: "/admin/cats",
+    title: "Mon chat",
+    url: "/admin/chat",
     icon: Cat,
   },
   {

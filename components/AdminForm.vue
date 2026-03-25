@@ -11,6 +11,13 @@ const props = defineProps<{
   title: string;
   submitLabel: string;
   isLoading?: boolean;
+  initialValues?: {
+    name: string;
+    slug: string;
+    description: string;
+    published: boolean;
+  };
+  resetOnSubmit?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -29,6 +36,17 @@ const slug = ref("");
 const description = ref("");
 const published = ref(true);
 
+watch(
+  () => props.initialValues,
+  (value) => {
+    name.value = value?.name || "";
+    slug.value = value?.slug || "";
+    description.value = value?.description || "";
+    published.value = value?.published ?? true;
+  },
+  { immediate: true },
+);
+
 function onSubmit() {
   emit("submitted", {
     name: name.value,
@@ -36,6 +54,15 @@ function onSubmit() {
     description: description.value,
     published: published.value,
   });
+
+  if (props.resetOnSubmit === false) {
+    return;
+  }
+
+  name.value = "";
+  slug.value = "";
+  description.value = "";
+  published.value = true;
 }
 </script>
 

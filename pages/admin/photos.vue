@@ -5,6 +5,7 @@ import CardContent from "~/components/ui/CardContent.vue";
 import CardDescription from "~/components/ui/CardDescription.vue";
 import CardHeader from "~/components/ui/CardHeader.vue";
 import CardTitle from "~/components/ui/CardTitle.vue";
+import type { PhotoRecord } from "~/types/models";
 
 definePageMeta({
   middleware: ["auth"],
@@ -12,18 +13,27 @@ definePageMeta({
 });
 
 const pb = usePocketbase();
+const selectedCatId = useState<string | null>("admin-selected-cat", () => null);
 
 const {
   data: photos,
   pending,
   error,
   refresh,
-} = await useAsyncData("admin-photos", async () => {
-  return pb.collection("photos").getList(1, 100, {
-    sort: "-created",
-    expand: "cat",
-  });
-});
+} = await useAsyncData(
+  () => `admin-photos-${selectedCatId.value || "none"}`,
+  async () => {
+    if (!selectedCatId.value) {
+      return [] as PhotoRecord[];
+    }
+
+    return pb.collection("photos").getFullList<PhotoRecord>({
+      sort: "-created",
+      filter: `cat = "${selectedCatId.value}"`,
+    });
+  },
+  { watch: [selectedCatId] },
+);
 </script>
 
 <template>
@@ -31,9 +41,9 @@ const {
     <Card>
       <CardHeader class="flex flex-row items-center justify-between space-y-0">
         <div>
-          <CardTitle class="text-2xl">Gérer les photos</CardTitle>
+          <CardTitle class="text-2xl">Photos de mon chat</CardTitle>
           <CardDescription
-            >Consulter le statut de publication des photos.</CardDescription
+            >Consultez les photos du chat sélectionné.</CardDescription
           >
         </div>
         <Button variant="outline" type="button" @click="refresh"
@@ -50,15 +60,15 @@ const {
         <p v-else-if="error" class="text-sm text-destructive">
           Erreur : {{ error.message }}
         </p>
-        <p
-          v-else-if="!photos?.items.length"
-          class="text-sm text-muted-foreground"
-        >
+        <p v-else-if="!selectedCatId" class="text-sm text-muted-foreground">
+          Aucun chat sélectionné.
+        </p>
+        <p v-else-if="!photos?.length" class="text-sm text-muted-foreground">
           Aucune photo pour le moment.
         </p>
         <ul v-else class="grid gap-2">
           <li
-            v-for="photo in photos.items"
+            v-for="photo in photos"
             :key="photo.id"
             class="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border bg-card p-3"
           >

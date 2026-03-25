@@ -97,7 +97,7 @@ function selectCat(catId: string) {
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem class="gap-2 p-2" as-child>
-            <NuxtLink to="/admin/cats">
+            <NuxtLink to="/admin/chat/new">
               <div
                 class="flex size-6 items-center justify-center rounded-md border bg-background"
               >
