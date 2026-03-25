@@ -48,12 +48,12 @@ async function onCreateCat(payload: {
       published: payload.published,
     });
 
-    createSuccess.value = "Cat created successfully.";
+    createSuccess.value = "Chat créé avec succès.";
     formKey.value += 1;
     await refresh();
   } catch (err) {
     createError.value =
-      err instanceof Error ? err.message : "Could not create cat";
+      err instanceof Error ? err.message : "Impossible de créer le chat";
   } finally {
     isCreating.value = false;
   }
@@ -65,11 +65,13 @@ async function onCreateCat(payload: {
     <Card>
       <CardHeader class="flex flex-row items-center justify-between space-y-0">
         <div>
-          <CardTitle class="text-2xl">Manage Cats</CardTitle>
-          <CardDescription>Create and review cat profiles.</CardDescription>
+          <CardTitle class="text-2xl">Gérer les chats</CardTitle>
+          <CardDescription
+            >Créer et consulter les fiches chats.</CardDescription
+          >
         </div>
         <Button variant="outline" type="button" @click="refresh"
-          >Refresh</Button
+          >Actualiser</Button
         >
       </CardHeader>
     </Card>
@@ -77,15 +79,15 @@ async function onCreateCat(payload: {
     <AdminForm
       :key="formKey"
       :is-loading="isCreating"
-      title="Create Cat"
-      submit-label="Save Cat"
+      title="Créer un chat"
+      submit-label="Enregistrer le chat"
       @submitted="onCreateCat"
     />
 
     <Card v-if="isCreating || createError || createSuccess">
       <CardContent class="grid gap-1.5 p-4">
         <p v-if="isCreating" class="text-sm text-muted-foreground">
-          Creating cat...
+          Création du chat...
         </p>
         <p v-if="createSuccess" class="text-sm text-green-600">
           {{ createSuccess }}
@@ -98,14 +100,14 @@ async function onCreateCat(payload: {
 
     <Card>
       <CardHeader>
-        <CardTitle class="text-base">Latest entries</CardTitle>
+        <CardTitle class="text-base">Dernières entrées</CardTitle>
       </CardHeader>
       <CardContent>
         <p v-if="pending" class="text-sm text-muted-foreground">
-          Loading cats...
+          Chargement des chats...
         </p>
         <p v-else-if="error" class="text-sm text-destructive">
-          Error: {{ error.message }}
+          Erreur : {{ error.message }}
         </p>
         <ul v-else class="grid gap-2">
           <li
@@ -125,7 +127,7 @@ async function onCreateCat(payload: {
                   : 'bg-amber-100 text-amber-700'
               "
             >
-              {{ cat.published ? "Published" : "Draft" }}
+              {{ cat.published ? "Publié" : "Brouillon" }}
             </span>
           </li>
         </ul>

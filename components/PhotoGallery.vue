@@ -24,12 +24,12 @@ function photoUrl(photo: PhotoRecord) {
 <template>
   <Card>
     <CardHeader>
-      <CardTitle class="text-xl">Photo gallery</CardTitle>
-      <CardDescription>Published photos for this cat.</CardDescription>
+      <CardTitle class="text-xl">Galerie photos</CardTitle>
+      <CardDescription>Photos publiées pour ce chat.</CardDescription>
     </CardHeader>
     <CardContent>
       <p v-if="!photos.length" class="text-sm text-muted-foreground">
-        No published photos yet.
+        Aucune photo publiée pour le moment.
       </p>
 
       <div v-else class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -40,11 +40,11 @@ function photoUrl(photo: PhotoRecord) {
         >
           <img
             :src="photoUrl(photo)"
-            :alt="photo.caption || 'Cat photo'"
+            :alt="photo.caption || 'Photo de chat'"
             class="block aspect-square w-full object-cover"
           />
           <figcaption class="px-3 py-2 text-sm text-muted-foreground">
-            {{ photo.caption || "Untitled" }}
+            {{ photo.caption || "Sans titre" }}
           </figcaption>
         </figure>
       </div>

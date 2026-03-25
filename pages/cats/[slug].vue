@@ -32,17 +32,17 @@ const { data, pending, error } = await useAsyncData(
       to="/"
       class="inline-flex w-fit items-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
     >
-      Back to gallery
+      Retour à la galerie
     </NuxtLink>
 
     <Card v-if="pending">
       <CardContent class="p-4 text-sm text-muted-foreground"
-        >Loading...</CardContent
+        >Chargement...</CardContent
       >
     </Card>
     <Card v-else-if="error">
       <CardContent class="p-4 text-sm text-destructive"
-        >Error: {{ error.message }}</CardContent
+        >Erreur : {{ error.message }}</CardContent
       >
     </Card>
 
@@ -53,7 +53,7 @@ const { data, pending, error } = await useAsyncData(
             data.cat.name
           }}</CardTitle>
           <CardDescription class="text-base">
-            {{ data.cat.description || "No description provided." }}
+            {{ data.cat.description || "Aucune description fournie." }}
           </CardDescription>
         </CardHeader>
       </Card>

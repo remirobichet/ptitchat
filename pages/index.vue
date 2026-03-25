@@ -29,8 +29,8 @@ const {
       <CardHeader class="space-y-3">
         <CardTitle class="text-3xl md:text-4xl">PtitChat</CardTitle>
         <CardDescription class="max-w-2xl text-base">
-          Explore the latest published cats and jump into the admin backoffice
-          when you need to update content.
+          Découvrez les derniers chats publiés et accédez à l'espace
+          d'administration pour mettre à jour le contenu.
         </CardDescription>
       </CardHeader>
       <CardContent class="flex flex-wrap gap-2">
@@ -38,34 +38,34 @@ const {
           class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
           to="/admin/login"
         >
-          Admin Login
+          Connexion admin
         </NuxtLink>
         <NuxtLink
           class="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
           to="/admin"
         >
-          Admin Dashboard
+          Tableau de bord admin
         </NuxtLink>
       </CardContent>
     </Card>
 
     <Card>
       <CardHeader class="flex flex-row items-center justify-between space-y-0">
-        <CardTitle class="text-xl">Latest cats</CardTitle>
+        <CardTitle class="text-xl">Derniers chats</CardTitle>
         <Button variant="outline" type="button" @click="refresh"
-          >Refresh</Button
+          >Actualiser</Button
         >
       </CardHeader>
 
       <CardContent>
         <p v-if="pending" class="text-sm text-muted-foreground">
-          Loading cats...
+          Chargement des chats...
         </p>
         <p v-else-if="error" class="text-sm text-destructive">
-          Could not load cats: {{ error.message }}
+          Impossible de charger les chats : {{ error.message }}
         </p>
         <p v-else-if="!cats?.length" class="text-sm text-muted-foreground">
-          No published cats yet.
+          Aucun chat publié pour le moment.
         </p>
 
         <div v-else class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

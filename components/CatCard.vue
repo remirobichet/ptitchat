@@ -30,14 +30,14 @@ const coverUrl = computed(() => {
         {{ cat.name }}
       </h3>
       <p class="text-sm text-muted-foreground">
-        {{ cat.description || "No description." }}
+        {{ cat.description || "Pas de description." }}
       </p>
     </div>
     <NuxtLink
       class="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
       :to="`/cats/${cat.slug}`"
     >
-      View details
+      Voir le détail
     </NuxtLink>
   </Card>
 </template>

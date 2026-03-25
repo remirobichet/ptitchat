@@ -48,7 +48,7 @@ function onSubmit() {
     <CardContent>
       <form class="grid gap-4" @submit.prevent="onSubmit">
         <div class="grid gap-2">
-          <Label for="cat-name">Name</Label>
+          <Label for="cat-name">Nom</Label>
           <Input
             id="cat-name"
             v-model="name"
@@ -75,7 +75,7 @@ function onSubmit() {
             id="cat-description"
             v-model="description"
             rows="4"
-            placeholder="Tell people about this cat"
+            placeholder="Décrivez ce chat"
             class="flex min-h-24 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />
         </div>
@@ -86,11 +86,11 @@ function onSubmit() {
             type="checkbox"
             class="h-4 w-4 rounded border border-input text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />
-          Published
+          Publié
         </label>
 
         <Button type="submit" :disabled="props.isLoading">
-          {{ props.isLoading ? "Saving..." : props.submitLabel }}
+          {{ props.isLoading ? "Enregistrement..." : props.submitLabel }}
         </Button>
       </form>
     </CardContent>

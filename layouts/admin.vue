@@ -53,16 +53,16 @@ const selectedCatName = computed(() => {
 
 const currentPageLabel = computed(() => {
   if (route.path === "/admin") {
-    return "Dashboard";
+    return "Tableau de bord";
   }
   if (route.path.startsWith("/admin/cats")) {
-    return "Cats";
+    return "Chats";
   }
   if (route.path.startsWith("/admin/photos")) {
     return "Photos";
   }
 
-  return "Admin";
+  return "Administration";
 });
 
 async function onLogout() {
@@ -95,7 +95,7 @@ async function onLogout() {
             <BreadcrumbList>
               <BreadcrumbItem class="hidden md:block">
                 <span class="text-muted-foreground">
-                  {{ selectedCatName ? `${selectedCatName} team` : "Admin" }}
+                  {{ selectedCatName || "Administration" }}
                 </span>
               </BreadcrumbItem>
               <BreadcrumbSeparator class="hidden md:block" />

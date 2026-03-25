@@ -31,11 +31,13 @@ const {
     <Card>
       <CardHeader class="flex flex-row items-center justify-between space-y-0">
         <div>
-          <CardTitle class="text-2xl">Manage Photos</CardTitle>
-          <CardDescription>Review photo publication status.</CardDescription>
+          <CardTitle class="text-2xl">Gérer les photos</CardTitle>
+          <CardDescription
+            >Consulter le statut de publication des photos.</CardDescription
+          >
         </div>
         <Button variant="outline" type="button" @click="refresh"
-          >Refresh</Button
+          >Actualiser</Button
         >
       </CardHeader>
     </Card>
@@ -43,16 +45,16 @@ const {
     <Card>
       <CardContent class="p-4">
         <p v-if="pending" class="text-sm text-muted-foreground">
-          Loading photos...
+          Chargement des photos...
         </p>
         <p v-else-if="error" class="text-sm text-destructive">
-          Error: {{ error.message }}
+          Erreur : {{ error.message }}
         </p>
         <p
           v-else-if="!photos?.items.length"
           class="text-sm text-muted-foreground"
         >
-          No photos yet.
+          Aucune photo pour le moment.
         </p>
         <ul v-else class="grid gap-2">
           <li
@@ -62,7 +64,7 @@ const {
           >
             <div>
               <p class="text-sm font-medium">
-                {{ photo.caption || "Untitled" }}
+                {{ photo.caption || "Sans titre" }}
               </p>
               <p class="text-xs text-muted-foreground">ID: {{ photo.id }}</p>
             </div>
@@ -74,7 +76,7 @@ const {
                   : 'bg-amber-100 text-amber-700'
               "
             >
-              {{ photo.published ? "Published" : "Draft" }}
+              {{ photo.published ? "Publié" : "Brouillon" }}
             </span>
           </li>
         </ul>

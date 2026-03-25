@@ -22,12 +22,12 @@ const emit = defineEmits<{
 
 const navMain = [
   {
-    title: "Dashboard",
+    title: "Tableau de bord",
     url: "/admin",
     icon: LayoutDashboard,
   },
   {
-    title: "Cats",
+    title: "Chats",
     url: "/admin/cats",
     icon: Cat,
   },
@@ -42,7 +42,7 @@ const navMain = [
 <template>
   <Sidebar collapsible="icon" variant="inset">
     <SidebarHeader>
-      <TeamSwitcher
+      <CatSwitcher
         :cats="props.cats"
         :selected-cat-id="props.selectedCatId"
         @update:selected-cat-id="emit('update:selectedCatId', $event)"

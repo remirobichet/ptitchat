@@ -23,7 +23,7 @@ const successMessage = ref("");
 
 async function onSubmit() {
   if (form.password !== form.confirmPassword) {
-    errorMessage.value = "Passwords do not match.";
+    errorMessage.value = "Les mots de passe ne correspondent pas.";
     return;
   }
 
@@ -40,14 +40,15 @@ async function onSubmit() {
       emailVisibility: true,
     });
 
-    successMessage.value = "Account created. You can now sign in.";
+    successMessage.value =
+      "Compte créé. Vous pouvez maintenant vous connecter.";
     form.name = "";
     form.email = "";
     form.password = "";
     form.confirmPassword = "";
   } catch (error) {
     errorMessage.value =
-      error instanceof Error ? error.message : "Could not create account";
+      error instanceof Error ? error.message : "Impossible de créer le compte";
   } finally {
     loading.value = false;
   }
@@ -57,16 +58,16 @@ async function onSubmit() {
 <template>
   <Card>
     <CardHeader class="space-y-1 text-center">
-      <CardTitle>Create an account</CardTitle>
+      <CardTitle>Créer un compte</CardTitle>
       <CardDescription
-        >Enter your information below to create your account</CardDescription
+        >Saisissez vos informations pour créer votre compte</CardDescription
       >
     </CardHeader>
 
     <CardContent>
       <form class="grid gap-4" @submit.prevent="onSubmit">
         <div class="grid gap-2">
-          <Label for="signup-name">Full Name</Label>
+          <Label for="signup-name">Nom complet</Label>
           <Input
             id="signup-name"
             v-model="form.name"
@@ -77,7 +78,7 @@ async function onSubmit() {
         </div>
 
         <div class="grid gap-2">
-          <Label for="signup-email">Email</Label>
+          <Label for="signup-email">E-mail</Label>
           <Input
             id="signup-email"
             v-model="form.email"
@@ -87,31 +88,32 @@ async function onSubmit() {
             placeholder="name@example.com"
           />
           <p class="text-xs text-muted-foreground">
-            We'll use this to contact you. We will not share it.
+            Nous utiliserons cette adresse pour vous contacter. Elle ne sera pas
+            partagée.
           </p>
         </div>
 
         <div class="grid gap-2">
-          <Label for="signup-password">Password</Label>
+          <Label for="signup-password">Mot de passe</Label>
           <Input
             id="signup-password"
             v-model="form.password"
             required
             type="password"
             autocomplete="new-password"
-            placeholder="At least 8 characters"
+            placeholder="Au moins 8 caractères"
           />
         </div>
 
         <div class="grid gap-2">
-          <Label for="signup-confirm-password">Confirm Password</Label>
+          <Label for="signup-confirm-password">Confirmer le mot de passe</Label>
           <Input
             id="signup-confirm-password"
             v-model="form.confirmPassword"
             required
             type="password"
             autocomplete="new-password"
-            placeholder="Confirm your password"
+            placeholder="Confirmez votre mot de passe"
           />
         </div>
 
@@ -123,16 +125,16 @@ async function onSubmit() {
         </p>
 
         <Button type="submit" class="w-full" :disabled="loading">
-          {{ loading ? "Creating account..." : "Create Account" }}
+          {{ loading ? "Création du compte..." : "Créer le compte" }}
         </Button>
       </form>
 
       <p class="mt-4 text-center text-sm text-muted-foreground">
-        Already have an account?
+        Vous avez déjà un compte ?
         <NuxtLink
           to="/admin/login"
           class="underline underline-offset-4 hover:text-foreground"
-          >Sign in</NuxtLink
+          >Se connecter</NuxtLink
         >
       </p>
     </CardContent>

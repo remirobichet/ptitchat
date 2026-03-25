@@ -27,7 +27,7 @@ async function onSubmit() {
     await navigateTo("/admin");
   } catch (error) {
     errorMessage.value =
-      error instanceof Error ? error.message : "Could not sign in";
+      error instanceof Error ? error.message : "Connexion impossible";
   } finally {
     loading.value = false;
   }
@@ -37,16 +37,16 @@ async function onSubmit() {
 <template>
   <Card>
     <CardHeader class="space-y-1 text-center">
-      <CardTitle>Sign in</CardTitle>
+      <CardTitle>Connexion</CardTitle>
       <CardDescription
-        >Enter your email below to access your admin dashboard</CardDescription
+        >Saisissez votre e-mail pour accéder à l'administration</CardDescription
       >
     </CardHeader>
 
     <CardContent>
       <form class="grid gap-4" @submit.prevent="onSubmit">
         <div class="grid gap-2">
-          <Label for="login-email">Email</Label>
+          <Label for="login-email">E-mail</Label>
           <Input
             id="login-email"
             v-model="form.email"
@@ -58,7 +58,7 @@ async function onSubmit() {
         </div>
 
         <div class="grid gap-2">
-          <Label for="login-password">Password</Label>
+          <Label for="login-password">Mot de passe</Label>
           <Input
             id="login-password"
             v-model="form.password"
@@ -73,16 +73,16 @@ async function onSubmit() {
         </p>
 
         <Button type="submit" class="w-full" :disabled="loading">
-          {{ loading ? "Signing in..." : "Sign in" }}
+          {{ loading ? "Connexion..." : "Se connecter" }}
         </Button>
       </form>
 
       <p class="mt-4 text-center text-sm text-muted-foreground">
-        Don't have an account?
+        Vous n'avez pas de compte ?
         <NuxtLink
           to="/admin/signup"
           class="underline underline-offset-4 hover:text-foreground"
-          >Create one</NuxtLink
+          >Créer un compte</NuxtLink
         >
       </p>
     </CardContent>

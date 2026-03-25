@@ -61,10 +61,12 @@ function selectCat(catId: string) {
             </div>
             <div class="grid flex-1 text-left text-sm leading-tight">
               <span class="truncate font-medium">{{
-                activeCat?.name || "Cats"
+                activeCat?.name || "Chats"
               }}</span>
               <span class="truncate text-xs">{{
-                activeCat?.slug ? `/${activeCat.slug}` : "No cats yet"
+                activeCat?.slug
+                  ? `/${activeCat.slug}`
+                  : "Aucun chat pour le moment"
               }}</span>
             </div>
             <ChevronsUpDown class="ml-auto" />
@@ -77,7 +79,7 @@ function selectCat(catId: string) {
           :side-offset="4"
         >
           <DropdownMenuLabel class="text-xs text-muted-foreground"
-            >Teams</DropdownMenuLabel
+            >Chats</DropdownMenuLabel
           >
           <DropdownMenuItem
             v-for="(cat, index) in props.cats"
@@ -101,7 +103,9 @@ function selectCat(catId: string) {
               >
                 <Plus class="size-4" />
               </div>
-              <div class="font-medium text-muted-foreground">Add cat</div>
+              <div class="font-medium text-muted-foreground">
+                Ajouter un chat
+              </div>
             </NuxtLink>
           </DropdownMenuItem>
         </DropdownMenuContent>
