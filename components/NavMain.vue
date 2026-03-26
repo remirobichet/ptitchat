@@ -29,6 +29,7 @@ const navItems = [
 ];
 
 const route = useRoute();
+const runtimeConfig = useRuntimeConfig();
 const hasCopiedPublicLink = ref(false);
 
 let resetCopyStateTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -45,12 +46,33 @@ const activeCat = computed(() => {
   );
 });
 
-const publicPath = computed(() => {
+const publicUrl = computed(() => {
   if (!activeCat.value?.slug) {
     return "";
   }
 
-  return `/cats/${activeCat.value.slug}`;
+  if (!import.meta.client) {
+    return "";
+  }
+
+  return buildCatPublicUrl(
+    activeCat.value.slug,
+    window.location.host,
+    window.location.protocol,
+    runtimeConfig.public.baseDomain,
+  );
+});
+
+const publicLinkTooltip = computed(() => {
+  if (!activeCat.value?.slug) {
+    return "Aucun chat sélectionné";
+  }
+
+  if (!publicUrl.value) {
+    return "Configurez NUXT_PUBLIC_BASE_DOMAIN";
+  }
+
+  return "Copier le lien public";
 });
 
 function isActive(path: string): boolean {
@@ -62,16 +84,12 @@ function isActive(path: string): boolean {
 }
 
 async function copyPublicLink() {
-  if (!import.meta.client || !publicPath.value || !window.location.origin) {
+  if (!import.meta.client || !publicUrl.value) {
     return;
   }
 
   try {
-    const publicUrl = new URL(
-      publicPath.value,
-      window.location.origin,
-    ).toString();
-    await navigator.clipboard.writeText(publicUrl);
+    await navigator.clipboard.writeText(publicUrl.value);
 
     hasCopiedPublicLink.value = true;
     if (resetCopyStateTimeout) {
@@ -120,10 +138,8 @@ onBeforeUnmount(() => {
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton
-            :disabled="!publicPath"
-            :tooltip="
-              publicPath ? 'Copier le lien public' : 'Aucun chat sélectionné'
-            "
+            :disabled="!publicUrl"
+            :tooltip="publicLinkTooltip"
             @click="copyPublicLink"
           >
             <Link />

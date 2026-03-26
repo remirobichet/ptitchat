@@ -28,6 +28,62 @@ cp .env.example .env
 pnpm dev
 ```
 
+## Local subdomain setup (WSL / Windows)
+
+The public cat page is resolved from the request hostname (`<cat-slug>.<base-domain>`).
+
+Example:
+
+- `mochi.ptitchat.test:3030` -> public page for cat slug `mochi`
+- `ptitchat.test:3030` -> admin entry (`/admin/login`)
+
+### 1) Configure env
+
+In `.env`:
+
+```bash
+NUXT_PUBLIC_BASE_DOMAIN=ptitchat.test
+```
+
+### 2) Start Nuxt on all interfaces
+
+```bash
+pnpm dev --host 0.0.0.0 --port 3030
+```
+
+### 3) Add host entries
+
+`hosts` files do not support wildcards, so add one line per cat slug you want to test.
+
+If your browser runs on **Windows**, edit:
+
+- `C:\Windows\System32\drivers\etc\hosts`
+
+If your browser runs inside **WSL/Linux**, edit:
+
+- `/etc/hosts`
+
+Add entries like:
+
+```txt
+127.0.0.1 ptitchat.test
+127.0.0.1 mochi.ptitchat.test
+```
+
+### 4) Test URLs
+
+- Admin: `http://ptitchat.test:3030/admin/login`
+- Public cat: `http://mochi.ptitchat.test:3030`
+
+### Notes
+
+- Cat subdomain uses the cat `slug` field (DNS-safe), not raw name.
+- If DNS seems cached on Windows after editing `hosts`, run:
+
+```powershell
+ipconfig /flushdns
+```
+
 ## Available scripts
 
 - `pnpm dev` - start Nuxt in development

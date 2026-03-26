@@ -1,9 +1,6 @@
 export default defineNuxtConfig({
   compatibilityDate: "2024-12-01",
   devtools: { enabled: true },
-  routeRules: {
-    "/": { redirect: "/admin/login" },
-  },
   modules: ["@nuxtjs/tailwindcss"],
   components: [
     {
@@ -18,6 +15,7 @@ export default defineNuxtConfig({
     public: {
       pocketbaseUrl:
         process.env.NUXT_PUBLIC_POCKETBASE_URL || "http://127.0.0.1:8090",
+      baseDomain: process.env.NUXT_PUBLIC_BASE_DOMAIN || "",
     },
   },
 });
