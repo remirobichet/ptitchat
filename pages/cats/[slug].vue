@@ -18,8 +18,8 @@ const { data, pending, error } = await useAsyncData(
       .collection("cats")
       .getFirstListItem<CatRecord>(`slug = "${slug.value}"`);
     const photos = await pb.collection("photos").getFullList<PhotoRecord>({
-      sort: "+order,+created",
-      filter: `cat = "${cat.id}" && published = true`,
+      sort: "+created",
+      filter: `cat = "${cat.id}"`,
     });
     return { cat, photos };
   },

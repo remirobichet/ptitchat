@@ -29,3 +29,15 @@ Recommended workflow:
 3. Create `photos` records referencing the created cat IDs.
 
 You can automate this with a script using the PocketBase JS SDK and a superuser token.
+
+## Migration checklist: remove `photos.published`
+
+1. In PocketBase Admin UI, open the `photos` collection and remove the `published` field.
+2. Update `photos` API rules that reference `published`.
+3. Drop `idx_photos_published` if it still exists in your database.
+4. Re-import `pocketbase/collections.schema.json` for fresh environments.
+5. Use `pocketbase/seed.records.json` as the new source for sample `photos` records (without `published`).
+6. Verify app flows:
+   - admin uploads multiple photos
+   - admin edits per-photo captions
+   - public cat page lists photos for the selected cat

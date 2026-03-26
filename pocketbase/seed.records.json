@@ -18,15 +18,11 @@
   "photos": [
     {
       "cat": "cat_milo",
-      "caption": "Morning stretch",
-      "published": true,
-      "order": 1
+      "caption": "Morning stretch"
     },
     {
       "cat": "cat_nala",
-      "caption": "Window patrol",
-      "published": true,
-      "order": 1
+      "caption": "Window patrol"
     }
   ]
 }

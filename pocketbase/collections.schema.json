@@ -115,8 +115,8 @@
     "name": "photos",
     "type": "base",
     "system": false,
-    "listRule": "@request.auth.id != '' || published = true",
-    "viewRule": "@request.auth.id != '' || published = true",
+    "listRule": "",
+    "viewRule": "",
     "createRule": "@request.auth.id != ''",
     "updateRule": "@request.auth.id != ''",
     "deleteRule": "@request.auth.id != ''",
@@ -177,27 +177,6 @@
       },
       {
         "hidden": false,
-        "id": "bool_pubphoto1",
-        "name": "published",
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "bool"
-      },
-      {
-        "hidden": false,
-        "id": "num_orderph01",
-        "max": null,
-        "min": 0,
-        "name": "order",
-        "noDecimal": true,
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "number"
-      },
-      {
-        "hidden": false,
         "id": "auto_created02",
         "name": "created",
         "onCreate": true,
@@ -217,10 +196,6 @@
         "type": "autodate"
       }
     ],
-    "indexes": [
-      "CREATE INDEX `idx_photos_cat` ON `photos` (`cat`)",
-      "CREATE INDEX `idx_photos_published` ON `photos` (`published`)",
-      "CREATE INDEX `idx_photos_order` ON `photos` (`order`)"
-    ]
+    "indexes": ["CREATE INDEX `idx_photos_cat` ON `photos` (`cat`)"]
   }
 ]

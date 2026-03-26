@@ -5,6 +5,8 @@ import CardContent from "~/components/ui/CardContent.vue";
 import CardDescription from "~/components/ui/CardDescription.vue";
 import CardHeader from "~/components/ui/CardHeader.vue";
 import CardTitle from "~/components/ui/CardTitle.vue";
+import { Input } from "~/components/ui/input";
+import Label from "~/components/ui/Label.vue";
 import type { PhotoRecord } from "~/types/models";
 
 definePageMeta({
@@ -14,6 +16,15 @@ definePageMeta({
 
 const pb = usePocketbase();
 const selectedCatId = useState<string | null>("admin-selected-cat", () => null);
+const selectedFiles = ref<File[]>([]);
+const fileInputKey = ref(0);
+const isUploading = ref(false);
+const uploadError = ref("");
+const uploadSuccess = ref("");
+const captionDrafts = ref<Record<string, string>>({});
+const captionSaving = ref<Record<string, boolean>>({});
+const captionError = ref<Record<string, string>>({});
+const captionSuccess = ref<Record<string, string>>({});
 
 const {
   data: photos,
@@ -34,22 +45,161 @@ const {
   },
   { watch: [selectedCatId] },
 );
+
+function onFilesChange(event: Event) {
+  const target = event.target as HTMLInputElement;
+  selectedFiles.value = Array.from(target.files || []);
+}
+
+watch(
+  () => photos.value,
+  (value) => {
+    const nextDrafts: Record<string, string> = {};
+
+    for (const photo of value || []) {
+      nextDrafts[photo.id] = photo.caption || "";
+    }
+
+    captionDrafts.value = nextDrafts;
+    captionSaving.value = {};
+    captionError.value = {};
+    captionSuccess.value = {};
+  },
+  { immediate: true },
+);
+
+function isCaptionDirty(photo: PhotoRecord) {
+  return (captionDrafts.value[photo.id] || "") !== (photo.caption || "");
+}
+
+function photoUrl(photo: PhotoRecord) {
+  if (!photo.image) {
+    return "";
+  }
+
+  return pb.files.getURL(photo, photo.image);
+}
+
+async function onSaveCaption(photoId: string) {
+  const nextCaption = (captionDrafts.value[photoId] || "").trim();
+
+  captionSaving.value[photoId] = true;
+  captionError.value[photoId] = "";
+  captionSuccess.value[photoId] = "";
+
+  try {
+    await pb.collection("photos").update(photoId, {
+      caption: nextCaption,
+    });
+
+    captionSuccess.value[photoId] = "Légende enregistrée.";
+    await refresh();
+  } catch (err) {
+    captionError.value[photoId] =
+      err instanceof Error
+        ? err.message
+        : "Impossible de mettre à jour la légende";
+  } finally {
+    captionSaving.value[photoId] = false;
+  }
+}
+
+async function onUploadPhotos() {
+  if (!selectedCatId.value) {
+    return;
+  }
+
+  if (!selectedFiles.value.length) {
+    uploadError.value = "Ajoutez au moins une image.";
+    uploadSuccess.value = "";
+    return;
+  }
+
+  isUploading.value = true;
+  uploadError.value = "";
+  uploadSuccess.value = "";
+
+  try {
+    await Promise.all(
+      selectedFiles.value.map((file) =>
+        pb.collection("photos").create<PhotoRecord>({
+          cat: selectedCatId.value as string,
+          image: file,
+        }),
+      ),
+    );
+
+    const uploadedCount = selectedFiles.value.length;
+    selectedFiles.value = [];
+    fileInputKey.value += 1;
+    uploadSuccess.value =
+      uploadedCount > 1
+        ? `${uploadedCount} photos ont été ajoutées. Ajoutez les légendes ci-dessous.`
+        : "1 photo a été ajoutée. Ajoutez la légende ci-dessous.";
+
+    await refresh();
+  } catch (err) {
+    uploadError.value =
+      err instanceof Error
+        ? err.message
+        : "Impossible de téléverser les photos";
+  } finally {
+    isUploading.value = false;
+  }
+}
 </script>
 
 <template>
   <section class="grid gap-4">
     <Card>
-      <CardHeader class="flex flex-row items-center justify-between space-y-0">
-        <div>
-          <CardTitle class="text-2xl">Photos de mon chat</CardTitle>
-          <CardDescription
-            >Consultez les photos du chat sélectionné.</CardDescription
-          >
-        </div>
-        <Button variant="outline" type="button" @click="refresh"
-          >Actualiser</Button
-        >
+      <CardHeader>
+        <CardTitle class="text-xl">Ajouter des photos</CardTitle>
+        <CardDescription>
+          Sélectionnez plusieurs images pour le chat actuellement sélectionné.
+        </CardDescription>
       </CardHeader>
+      <CardContent>
+        <form class="grid gap-4" @submit.prevent="onUploadPhotos">
+          <div class="grid gap-2">
+            <Label for="photo-files">Images</Label>
+            <input
+              :key="fileInputKey"
+              id="photo-files"
+              type="file"
+              accept="image/*"
+              multiple
+              :disabled="!selectedCatId || isUploading"
+              class="flex w-full cursor-pointer rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium disabled:cursor-not-allowed disabled:opacity-50"
+              @change="onFilesChange"
+            />
+            <p class="text-xs text-muted-foreground">
+              {{
+                selectedFiles.length
+                  ? `${selectedFiles.length} fichier(s) sélectionné(s)`
+                  : "Aucun fichier sélectionné"
+              }}
+            </p>
+          </div>
+
+          <div class="grid gap-2">
+            <p class="text-sm text-muted-foreground">
+              Les images sont téléversées d'abord, puis les légendes sont
+              ajoutées individuellement.
+            </p>
+          </div>
+
+          <Button type="submit" :disabled="!selectedCatId || isUploading">
+            {{ isUploading ? "Téléversement..." : "Ajouter les photos" }}
+          </Button>
+
+          <p v-if="uploadSuccess" class="text-sm text-green-600">
+            {{ uploadSuccess }}
+          </p>
+          <p v-if="uploadError" class="text-sm text-destructive">
+            {{ uploadError }}
+          </p>
+        </form>
+      </CardContent>
     </Card>
 
     <Card>
@@ -70,24 +220,44 @@ const {
           <li
             v-for="photo in photos"
             :key="photo.id"
-            class="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border bg-card p-3"
+            class="flex flex-wrap items-start gap-3 rounded-md border border-border bg-card p-3"
           >
-            <div>
-              <p class="text-sm font-medium">
-                {{ photo.caption || "Sans titre" }}
+            <img
+              v-if="photo.image"
+              :src="photoUrl(photo)"
+              :alt="captionDrafts[photo.id] || 'Photo de chat'"
+              class="h-24 w-24 shrink-0 rounded-md border border-border object-cover"
+            />
+
+            <div class="grid min-w-[240px] flex-1 gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <Input
+                  :model-value="captionDrafts[photo.id] || ''"
+                  placeholder="Ajouter une légende"
+                  class="w-full max-w-md"
+                  :disabled="captionSaving[photo.id]"
+                  @update:model-value="captionDrafts[photo.id] = String($event)"
+                />
+                <Button
+                  type="button"
+                  :disabled="captionSaving[photo.id] || !isCaptionDirty(photo)"
+                  @click="onSaveCaption(photo.id)"
+                >
+                  {{
+                    captionSaving[photo.id]
+                      ? "Enregistrement..."
+                      : "Enregistrer"
+                  }}
+                </Button>
+              </div>
+
+              <p v-if="captionSuccess[photo.id]" class="text-xs text-green-600">
+                {{ captionSuccess[photo.id] }}
               </p>
-              <p class="text-xs text-muted-foreground">ID: {{ photo.id }}</p>
+              <p v-if="captionError[photo.id]" class="text-xs text-destructive">
+                {{ captionError[photo.id] }}
+              </p>
             </div>
-            <span
-              class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-              :class="
-                photo.published
-                  ? 'bg-emerald-100 text-emerald-700'
-                  : 'bg-amber-100 text-amber-700'
-              "
-            >
-              {{ photo.published ? "Publié" : "Brouillon" }}
-            </span>
           </li>
         </ul>
       </CardContent>
