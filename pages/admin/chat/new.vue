@@ -58,7 +58,7 @@ async function onCreateCat(payload: {
       </CardHeader>
     </Card>
 
-    <AdminForm
+    <CatForm
       :is-loading="isCreating"
       title="Nouveau chat"
       submit-label="Créer le chat"

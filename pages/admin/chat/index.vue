@@ -98,7 +98,7 @@ async function onUpdateCat(payload: {
       </CardContent>
     </Card>
 
-    <AdminForm
+    <CatForm
       v-else
       :is-loading="isSaving"
       :title="`Modifier ${cat.name}`"
