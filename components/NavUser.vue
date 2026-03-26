@@ -42,9 +42,6 @@ const userInitial = computed(() => props.email.charAt(0).toUpperCase());
             </Avatar>
             <div class="grid flex-1 text-left text-sm leading-tight">
               <span class="truncate font-medium">{{ props.email }}</span>
-              <span class="truncate text-xs text-muted-foreground"
-                >Administrateur</span
-              >
             </div>
             <ChevronsUpDown class="ml-auto size-4" />
           </SidebarMenuButton>
@@ -55,13 +52,6 @@ const userInitial = computed(() => props.email.charAt(0).toUpperCase());
           align="end"
           :side-offset="4"
         >
-          <DropdownMenuItem as-child>
-            <NuxtLink to="/" class="cursor-pointer">
-              <GalleryHorizontal class="size-4" />
-              Galerie publique
-            </NuxtLink>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
           <DropdownMenuItem class="cursor-pointer" @click="emit('logout')">
             <LogOut class="size-4" />
             Déconnexion

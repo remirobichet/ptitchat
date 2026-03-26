@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Camera, Cat } from "lucide-vue-next";
 import {
   Sidebar,
   SidebarContent,
@@ -19,19 +18,6 @@ const emit = defineEmits<{
   "update:selectedCatId": [catId: string];
   logout: [];
 }>();
-
-const navMain = [
-  {
-    title: "Mon chat",
-    url: "/admin/chat",
-    icon: Cat,
-  },
-  {
-    title: "Photos",
-    url: "/admin/photos",
-    icon: Camera,
-  },
-];
 </script>
 
 <template>
@@ -45,7 +31,7 @@ const navMain = [
     </SidebarHeader>
 
     <SidebarContent>
-      <NavMain :items="navMain" />
+      <NavMain :cats="props.cats" :selected-cat-id="props.selectedCatId" />
     </SidebarContent>
 
     <SidebarFooter>
