@@ -80,15 +80,6 @@ async function onUpdateCat(payload: {
 
 <template>
   <section class="grid gap-4">
-    <Card>
-      <CardHeader>
-        <CardTitle class="text-2xl">Mon chat</CardTitle>
-        <CardDescription>
-          Modifiez les informations globales du chat sélectionné.
-        </CardDescription>
-      </CardHeader>
-    </Card>
-
     <Card v-if="pending">
       <CardContent class="p-4 text-sm text-muted-foreground">
         Chargement du chat...
@@ -110,7 +101,7 @@ async function onUpdateCat(payload: {
     <AdminForm
       v-else
       :is-loading="isSaving"
-      title="Modifier mon chat"
+      :title="`Modifier ${cat.name}`"
       submit-label="Enregistrer les modifications"
       :initial-values="initialValues"
       :reset-on-submit="false"
@@ -128,9 +119,5 @@ async function onUpdateCat(payload: {
         <p v-if="saveError" class="text-sm text-destructive">{{ saveError }}</p>
       </CardContent>
     </Card>
-
-    <Button variant="outline" type="button" class="w-fit" @click="refresh">
-      Actualiser
-    </Button>
   </section>
 </template>
