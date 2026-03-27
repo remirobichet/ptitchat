@@ -196,5 +196,138 @@
       }
     ],
     "indexes": ["CREATE INDEX `idx_photos_cat` ON `photos` (`cat`)"]
+  },
+  {
+    "id": "pbc_story000001",
+    "name": "story_sections",
+    "type": "base",
+    "system": false,
+    "listRule": "@request.auth.id != '' || isVisible = true",
+    "viewRule": "@request.auth.id != '' || isVisible = true",
+    "createRule": "@request.auth.id != ''",
+    "updateRule": "@request.auth.id != ''",
+    "deleteRule": "@request.auth.id != ''",
+    "fields": [
+      {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text_id_story1",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "cascadeDelete": true,
+        "collectionId": "pbc_cats000001",
+        "hidden": false,
+        "id": "rel_catstory01",
+        "maxSelect": 1,
+        "minSelect": 1,
+        "name": "cat",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "hidden": false,
+        "id": "sel_typstory01",
+        "maxSelect": 1,
+        "name": "type",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "select",
+        "values": ["hero", "content", "gallery"]
+      },
+      {
+        "hidden": false,
+        "id": "text_titstory1",
+        "max": 160,
+        "min": 0,
+        "name": "title",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "convertUrls": false,
+        "hidden": false,
+        "id": "edit_txtstory1",
+        "maxSize": 0,
+        "name": "text",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "editor"
+      },
+      {
+        "cascadeDelete": false,
+        "collectionId": "pbc_photo00001",
+        "hidden": false,
+        "id": "rel_phostory01",
+        "maxSelect": 100,
+        "minSelect": 0,
+        "name": "photos",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "hidden": false,
+        "id": "num_ordstory01",
+        "max": null,
+        "min": 0,
+        "name": "order",
+        "onlyInt": true,
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "number"
+      },
+      {
+        "hidden": false,
+        "id": "bool_visstory1",
+        "name": "isVisible",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "bool"
+      },
+      {
+        "hidden": false,
+        "id": "auto_created03",
+        "name": "created",
+        "onCreate": true,
+        "onUpdate": false,
+        "presentable": false,
+        "system": true,
+        "type": "autodate"
+      },
+      {
+        "hidden": false,
+        "id": "auto_updated03",
+        "name": "updated",
+        "onCreate": true,
+        "onUpdate": true,
+        "presentable": false,
+        "system": true,
+        "type": "autodate"
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX `idx_story_sections_cat` ON `story_sections` (`cat`)",
+      "CREATE INDEX `idx_story_sections_order` ON `story_sections` (`cat`, `order`)"
+    ]
   }
 ]

@@ -4,7 +4,7 @@ This directory contains import/bootstrap files for the cat gallery data model.
 
 ## Files
 
-- `collections.schema.json`: collection definitions for `cats` and `photos`.
+- `collections.schema.json`: collection definitions for `cats`, `photos` and `story_sections`.
 - `seed.records.json`: example records to bootstrap content quickly.
 
 ## Importing collections
@@ -41,4 +41,6 @@ You can automate this with a script using the PocketBase JS SDK and a superuser 
 6. Verify app flows:
    - admin uploads multiple photos
    - admin edits per-photo captions
-   - public cat page lists photos for the selected cat
+   - admin creates and reorders `story_sections`
+   - admin links 0-N `photos` to each `story_sections`
+   - public cat page renders the selected storytelling sections

@@ -4,7 +4,11 @@ import CardContent from "~/components/ui/CardContent.vue";
 import CardDescription from "~/components/ui/CardDescription.vue";
 import CardHeader from "~/components/ui/CardHeader.vue";
 import CardTitle from "~/components/ui/CardTitle.vue";
-import type { CatRecord, PhotoRecord } from "~/types/models";
+import type {
+  CatRecord,
+  PhotoRecord,
+  StorySectionRecord,
+} from "~/types/models";
 
 const pb = usePocketbase();
 const runtimeConfig = useRuntimeConfig();
@@ -77,6 +81,27 @@ const {
   { watch: [cat] },
 );
 
+const {
+  data: storySections,
+  pending: storyPending,
+  error: storyError,
+} = await useAsyncData(
+  () => `public-story-sections-${cat.value?.id || "none"}`,
+  async () => {
+    if (!cat.value) {
+      return [] as StorySectionRecord[];
+    }
+
+    return pb.collection("story_sections").getFullList<StorySectionRecord>({
+      sort: "+order,+created",
+      filter: `cat = "${escapeFilterValue(cat.value.id)}" && isVisible = true`,
+    });
+  },
+  { watch: [cat] },
+);
+
+const hasStorySections = computed(() => Boolean(storySections.value?.length));
+
 const coverUrl = computed(() => {
   if (!cat.value?.coverPhoto) {
     return "";
@@ -145,17 +170,23 @@ useHead(() => ({
         </CardHeader>
       </Card>
 
-      <Card v-if="photosPending">
+      <Card v-if="storyPending || photosPending">
         <CardContent class="p-5 text-sm text-muted-foreground">
-          Chargement des photos...
+          Chargement du storytelling...
         </CardContent>
       </Card>
 
-      <Card v-else-if="photosError">
+      <Card v-else-if="storyError || photosError">
         <CardContent class="p-5 text-sm text-destructive">
-          Erreur : {{ photosError.message }}
+          Erreur : {{ storyError?.message || photosError?.message }}
         </CardContent>
       </Card>
+
+      <StorySectionRenderer
+        v-else-if="hasStorySections"
+        :sections="storySections || []"
+        :photos="photos || []"
+      />
 
       <PhotoGallery v-else :photos="photos || []" />
     </template>

@@ -17,3 +17,15 @@ export type PhotoRecord = BaseRecord & {
   image?: string;
   caption?: string;
 };
+
+export type StorySectionType = "hero" | "content" | "gallery";
+
+export type StorySectionRecord = BaseRecord & {
+  cat: string;
+  type: StorySectionType;
+  title?: string;
+  text?: string;
+  photos?: string[];
+  order?: number;
+  isVisible?: boolean;
+};

@@ -63,6 +63,9 @@ const currentPageLabel = computed(() => {
   if (route.path.startsWith("/admin/photos")) {
     return "Photos";
   }
+  if (route.path.startsWith("/admin/storytelling")) {
+    return "Storytelling";
+  }
 
   return "Administration";
 });

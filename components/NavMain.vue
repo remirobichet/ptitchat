@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Camera, Cat, Link } from "lucide-vue-next";
+import { BookText, Camera, Cat, Link } from "lucide-vue-next";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -25,6 +25,11 @@ const navItems = [
     title: "Photos",
     url: "/admin/photos",
     icon: Camera,
+  },
+  {
+    title: "Storytelling",
+    url: "/admin/storytelling",
+    icon: BookText,
   },
 ];
 
