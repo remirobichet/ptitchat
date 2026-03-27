@@ -11,11 +11,17 @@ const props = defineProps<{
   title: string;
   submitLabel: string;
   isLoading?: boolean;
+  coverPhotoOptions?: Array<{
+    id: string;
+    label: string;
+    imageUrl: string;
+  }>;
   initialValues?: {
     name: string;
     slug: string;
     description: string;
     published: boolean;
+    coverPhoto: string;
   };
   resetOnSubmit?: boolean;
 }>();
@@ -27,6 +33,7 @@ const emit = defineEmits<{
       slug: string;
       description: string;
       published: boolean;
+      coverPhoto: string | null;
     },
   ];
 }>();
@@ -35,6 +42,7 @@ const name = ref("");
 const slug = ref("");
 const description = ref("");
 const published = ref(true);
+const coverPhoto = ref("");
 
 watch(
   () => props.initialValues,
@@ -43,6 +51,7 @@ watch(
     slug.value = value?.slug || "";
     description.value = value?.description || "";
     published.value = value?.published ?? true;
+    coverPhoto.value = value?.coverPhoto || "";
   },
   { immediate: true },
 );
@@ -53,6 +62,7 @@ function onSubmit() {
     slug: slug.value,
     description: description.value,
     published: published.value,
+    coverPhoto: coverPhoto.value || null,
   });
 
   if (props.resetOnSubmit === false) {
@@ -63,6 +73,7 @@ function onSubmit() {
   slug.value = "";
   description.value = "";
   published.value = true;
+  coverPhoto.value = "";
 }
 </script>
 
@@ -115,6 +126,44 @@ function onSubmit() {
           />
           Publié
         </label>
+
+        <div v-if="props.coverPhotoOptions?.length" class="grid gap-2">
+          <Label>Image de couverture</Label>
+          <div class="grid gap-2">
+            <label
+              class="flex cursor-pointer items-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-sm"
+            >
+              <input
+                v-model="coverPhoto"
+                type="radio"
+                value=""
+                class="h-4 w-4"
+              />
+              Aucune image de couverture
+            </label>
+
+            <label
+              v-for="option in props.coverPhotoOptions"
+              :key="option.id"
+              class="flex cursor-pointer items-center gap-3 rounded-md border border-border bg-background px-3 py-2"
+            >
+              <input
+                v-model="coverPhoto"
+                type="radio"
+                :value="option.id"
+                class="h-4 w-4"
+              />
+              <img
+                :src="option.imageUrl"
+                :alt="option.label"
+                class="h-12 w-12 rounded-md border border-border object-cover"
+              />
+              <span class="text-sm text-muted-foreground">{{
+                option.label
+              }}</span>
+            </label>
+          </div>
+        </div>
 
         <Button type="submit" :disabled="props.isLoading">
           {{ props.isLoading ? "Enregistrement..." : props.submitLabel }}

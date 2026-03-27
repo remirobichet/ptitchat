@@ -5,7 +5,7 @@ import CardContent from "~/components/ui/CardContent.vue";
 import CardDescription from "~/components/ui/CardDescription.vue";
 import CardHeader from "~/components/ui/CardHeader.vue";
 import CardTitle from "~/components/ui/CardTitle.vue";
-import type { CatRecord } from "~/types/models";
+import type { CatRecord, PhotoRecord } from "~/types/models";
 
 definePageMeta({
   middleware: ["auth"],
@@ -36,6 +36,39 @@ const {
   { watch: [selectedCatId] },
 );
 
+const { data: photos } = await useAsyncData(
+  () => `admin-chat-cover-options-${selectedCatId.value || "none"}`,
+  async () => {
+    if (!selectedCatId.value) {
+      return [] as PhotoRecord[];
+    }
+
+    return pb.collection("photos").getFullList<PhotoRecord>({
+      sort: "-created",
+      filter: `cat = "${selectedCatId.value}"`,
+    });
+  },
+  { watch: [selectedCatId] },
+);
+
+function photoUrl(photo: PhotoRecord) {
+  if (!photo.image) {
+    return "";
+  }
+
+  return pb.files.getURL(photo, photo.image);
+}
+
+const coverPhotoOptions = computed(() => {
+  return (photos.value || [])
+    .filter((photo) => Boolean(photo.image))
+    .map((photo, index) => ({
+      id: photo.id,
+      label: photo.caption || `Photo ${index + 1}`,
+      imageUrl: photoUrl(photo),
+    }));
+});
+
 const initialValues = computed(() => {
   if (!cat.value) {
     return undefined;
@@ -46,6 +79,7 @@ const initialValues = computed(() => {
     slug: cat.value.slug,
     description: cat.value.description || "",
     published: cat.value.published ?? true,
+    coverPhoto: cat.value.coverPhoto || "",
   };
 });
 
@@ -54,6 +88,7 @@ async function onUpdateCat(payload: {
   slug: string;
   description: string;
   published: boolean;
+  coverPhoto: string | null;
 }) {
   if (!selectedCatId.value) {
     return;
@@ -64,7 +99,13 @@ async function onUpdateCat(payload: {
   saveSuccess.value = "";
 
   try {
-    await pb.collection("cats").update(selectedCatId.value, payload);
+    await pb.collection("cats").update(selectedCatId.value, {
+      name: payload.name,
+      slug: payload.slug,
+      description: payload.description,
+      published: payload.published,
+      coverPhoto: payload.coverPhoto || null,
+    });
     saveSuccess.value = "Les informations du chat ont été mises à jour.";
     await Promise.all([refresh(), refreshNuxtData("admin-sidebar-cats")]);
   } catch (err) {
@@ -104,6 +145,7 @@ async function onUpdateCat(payload: {
       :title="`Modifier ${cat.name}`"
       submit-label="Enregistrer les modifications"
       :initial-values="initialValues"
+      :cover-photo-options="coverPhotoOptions"
       :reset-on-submit="false"
       @submitted="onUpdateCat"
     />

@@ -62,18 +62,17 @@
         "type": "editor"
       },
       {
+        "cascadeDelete": false,
+        "collectionId": "pbc_photo00001",
         "hidden": false,
-        "id": "file_covercat1",
+        "id": "rel_covercat01",
         "maxSelect": 1,
-        "maxSize": 5242880,
-        "mimeTypes": ["image/jpeg", "image/png", "image/webp", "image/gif"],
-        "name": "coverImage",
+        "minSelect": 0,
+        "name": "coverPhoto",
         "presentable": false,
-        "protected": false,
         "required": false,
         "system": false,
-        "thumbs": [],
-        "type": "file"
+        "type": "relation"
       },
       {
         "hidden": false,

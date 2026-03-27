@@ -22,6 +22,7 @@ async function onCreateCat(payload: {
   slug: string;
   description: string;
   published: boolean;
+  coverPhoto: string | null;
 }) {
   isCreating.value = true;
   createError.value = "";
@@ -32,6 +33,7 @@ async function onCreateCat(payload: {
       slug: payload.slug,
       description: payload.description,
       published: payload.published,
+      coverPhoto: payload.coverPhoto || null,
     });
 
     selectedCatId.value = created.id;

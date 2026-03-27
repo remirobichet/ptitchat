@@ -8,7 +8,7 @@ export type CatRecord = BaseRecord & {
   name: string;
   slug: string;
   description?: string;
-  coverImage?: string;
+  coverPhoto?: string;
   published?: boolean;
 };
 

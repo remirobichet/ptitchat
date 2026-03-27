@@ -25,8 +25,9 @@ If import still fails, your PB instance may be older/newer and require a slightl
 Recommended workflow:
 
 1. Create `cats` from the file first.
-2. Upload images for `coverImage` (cats) and `image` (photos).
+2. Upload images for `image` (photos).
 3. Create `photos` records referencing the created cat IDs.
+4. Set `cats.coverPhoto` as a relation to one of the cat's `photos` records.
 
 You can automate this with a script using the PocketBase JS SDK and a superuser token.
 

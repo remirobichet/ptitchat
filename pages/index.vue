@@ -78,11 +78,19 @@ const {
 );
 
 const coverUrl = computed(() => {
-  if (!cat.value?.coverImage) {
+  if (!cat.value?.coverPhoto) {
     return "";
   }
 
-  return pb.files.getURL(cat.value, cat.value.coverImage);
+  const photoRecord = (photos.value || []).find(
+    (photo) => photo.id === cat.value?.coverPhoto,
+  );
+
+  if (photoRecord?.image) {
+    return pb.files.getURL(photoRecord, photoRecord.image);
+  }
+
+  return "";
 });
 
 useHead(() => ({

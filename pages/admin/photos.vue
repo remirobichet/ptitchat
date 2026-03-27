@@ -7,7 +7,7 @@ import CardHeader from "~/components/ui/CardHeader.vue";
 import CardTitle from "~/components/ui/CardTitle.vue";
 import { Input } from "~/components/ui/input";
 import Label from "~/components/ui/Label.vue";
-import type { PhotoRecord } from "~/types/models";
+import type { CatRecord, PhotoRecord } from "~/types/models";
 
 definePageMeta({
   middleware: ["auth"],
@@ -25,6 +25,21 @@ const captionDrafts = ref<Record<string, string>>({});
 const captionSaving = ref<Record<string, boolean>>({});
 const captionError = ref<Record<string, string>>({});
 const captionSuccess = ref<Record<string, string>>({});
+const coverSavingId = ref<string | null>(null);
+const coverError = ref("");
+const coverSuccess = ref("");
+
+const { data: currentCat, refresh: refreshCurrentCat } = await useAsyncData(
+  () => `admin-photos-cat-${selectedCatId.value || "none"}`,
+  async () => {
+    if (!selectedCatId.value) {
+      return null;
+    }
+
+    return pb.collection("cats").getOne<CatRecord>(selectedCatId.value);
+  },
+  { watch: [selectedCatId] },
+);
 
 const {
   data: photos,
@@ -78,6 +93,38 @@ function photoUrl(photo: PhotoRecord) {
   }
 
   return pb.files.getURL(photo, photo.image);
+}
+
+function isCurrentCover(photo: PhotoRecord) {
+  return currentCat.value?.coverPhoto === photo.id;
+}
+
+async function onSetCoverPhoto(photoId: string) {
+  if (!selectedCatId.value || currentCat.value?.coverPhoto === photoId) {
+    return;
+  }
+
+  coverSavingId.value = photoId;
+  coverError.value = "";
+  coverSuccess.value = "";
+
+  try {
+    await pb.collection("cats").update(selectedCatId.value, {
+      coverPhoto: photoId,
+    });
+    coverSuccess.value = "Image de couverture mise à jour.";
+    await Promise.all([
+      refreshCurrentCat(),
+      refreshNuxtData("admin-sidebar-cats"),
+    ]);
+  } catch (err) {
+    coverError.value =
+      err instanceof Error
+        ? err.message
+        : "Impossible de définir l'image de couverture";
+  } finally {
+    coverSavingId.value = null;
+  }
 }
 
 async function onSaveCaption(photoId: string) {
@@ -249,6 +296,22 @@ async function onUploadPhotos() {
                       : "Enregistrer"
                   }}
                 </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  :disabled="
+                    coverSavingId === photo.id || isCurrentCover(photo)
+                  "
+                  @click="onSetCoverPhoto(photo.id)"
+                >
+                  {{
+                    coverSavingId === photo.id
+                      ? "Mise à jour..."
+                      : isCurrentCover(photo)
+                        ? "Couverture actuelle"
+                        : "Définir comme couverture"
+                  }}
+                </Button>
               </div>
 
               <p v-if="captionSuccess[photo.id]" class="text-xs text-green-600">
@@ -257,9 +320,21 @@ async function onUploadPhotos() {
               <p v-if="captionError[photo.id]" class="text-xs text-destructive">
                 {{ captionError[photo.id] }}
               </p>
+              <p
+                v-if="isCurrentCover(photo)"
+                class="text-xs font-medium text-green-600"
+              >
+                Cette photo est utilisée comme couverture.
+              </p>
             </div>
           </li>
         </ul>
+        <p v-if="coverSuccess" class="mt-3 text-sm text-green-600">
+          {{ coverSuccess }}
+        </p>
+        <p v-if="coverError" class="mt-3 text-sm text-destructive">
+          {{ coverError }}
+        </p>
       </CardContent>
     </Card>
   </section>
