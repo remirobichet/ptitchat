@@ -2,9 +2,9 @@
 const auth = useAuth();
 
 watch(
-  () => auth.isAuthenticated.value,
-  (isAuthenticated) => {
-    if (!isAuthenticated) {
+  () => auth.canAccessAdmin.value,
+  (canAccessAdmin) => {
+    if (!canAccessAdmin) {
       return;
     }
 

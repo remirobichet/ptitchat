@@ -38,10 +38,11 @@ async function onSubmit() {
       passwordConfirm: form.confirmPassword,
       name: form.name,
       emailVisibility: true,
+      verified: false,
     });
 
     successMessage.value =
-      "Compte créé. Vous pouvez maintenant vous connecter.";
+      "Compte créé. Un administrateur doit encore valider votre accès.";
     form.name = "";
     form.email = "";
     form.password = "";

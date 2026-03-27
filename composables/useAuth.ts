@@ -1,6 +1,7 @@
 type AuthUser = {
   id: string;
   email?: string;
+  verified: boolean;
 };
 
 function extractAuthUser(
@@ -13,6 +14,7 @@ function extractAuthUser(
   return {
     id: String(model.id),
     email: typeof model.email === "string" ? model.email : undefined,
+    verified: model.verified === true,
   };
 }
 
@@ -36,15 +38,28 @@ export function useAuth() {
   }
 
   const isAuthenticated = computed(() => !!user.value);
+  const canAccessAdmin = computed(() => user.value?.verified === true);
 
   async function login(email: string, password: string) {
     const result = await pb
       .collection("users")
       .authWithPassword(email, password);
-    user.value = {
+
+    const nextUser: AuthUser = {
       id: result.record.id,
       email: result.record.email,
+      verified: result.record.verified === true,
     };
+
+    if (!nextUser.verified) {
+      pb.authStore.clear();
+      user.value = null;
+      throw new Error(
+        "Votre compte existe mais n'est pas encore valide. Contactez un administrateur.",
+      );
+    }
+
+    user.value = nextUser;
     return user.value;
   }
 
@@ -56,6 +71,7 @@ export function useAuth() {
   return {
     user,
     isAuthenticated,
+    canAccessAdmin,
     login,
     logout,
   };
