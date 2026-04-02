@@ -78,6 +78,8 @@ const initialValues = computed(() => {
     name: cat.value.name,
     slug: cat.value.slug,
     description: cat.value.description || "",
+    alsoKnownAs: cat.value.alsoKnownAs || "",
+    birthDate: cat.value.birthDate?.slice(0, 10) || "",
     published: cat.value.published ?? true,
     coverPhoto: cat.value.coverPhoto || "",
   };
@@ -87,6 +89,8 @@ async function onUpdateCat(payload: {
   name: string;
   slug: string;
   description: string;
+  alsoKnownAs: string;
+  birthDate: string | null;
   published: boolean;
   coverPhoto: string | null;
 }) {
@@ -103,6 +107,8 @@ async function onUpdateCat(payload: {
       name: payload.name,
       slug: payload.slug,
       description: payload.description,
+      alsoKnownAs: payload.alsoKnownAs.trim(),
+      birthDate: payload.birthDate || null,
       published: payload.published,
       coverPhoto: payload.coverPhoto || null,
     });

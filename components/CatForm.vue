@@ -20,6 +20,8 @@ const props = defineProps<{
     name: string;
     slug: string;
     description: string;
+    alsoKnownAs: string;
+    birthDate: string;
     published: boolean;
     coverPhoto: string;
   };
@@ -32,6 +34,8 @@ const emit = defineEmits<{
       name: string;
       slug: string;
       description: string;
+      alsoKnownAs: string;
+      birthDate: string | null;
       published: boolean;
       coverPhoto: string | null;
     },
@@ -41,6 +45,8 @@ const emit = defineEmits<{
 const name = ref("");
 const slug = ref("");
 const description = ref("");
+const alsoKnownAs = ref("");
+const birthDate = ref("");
 const published = ref(true);
 const coverPhoto = ref("");
 
@@ -50,6 +56,8 @@ watch(
     name.value = value?.name || "";
     slug.value = value?.slug || "";
     description.value = value?.description || "";
+    alsoKnownAs.value = value?.alsoKnownAs || "";
+    birthDate.value = value?.birthDate || "";
     published.value = value?.published ?? true;
     coverPhoto.value = value?.coverPhoto || "";
   },
@@ -61,6 +69,8 @@ function onSubmit() {
     name: name.value,
     slug: slug.value,
     description: description.value,
+    alsoKnownAs: alsoKnownAs.value,
+    birthDate: birthDate.value || null,
     published: published.value,
     coverPhoto: coverPhoto.value || null,
   });
@@ -72,6 +82,8 @@ function onSubmit() {
   name.value = "";
   slug.value = "";
   description.value = "";
+  alsoKnownAs.value = "";
+  birthDate.value = "";
   published.value = true;
   coverPhoto.value = "";
 }
@@ -116,6 +128,21 @@ function onSubmit() {
             placeholder="Décrivez ce chat"
             class="flex min-h-24 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />
+        </div>
+
+        <div class="grid gap-2">
+          <Label for="cat-also-known-as">Aussi appelé</Label>
+          <Input
+            id="cat-also-known-as"
+            v-model="alsoKnownAs"
+            type="text"
+            placeholder="Le gros mangeur, Mr papouille, ..."
+          />
+        </div>
+
+        <div class="grid gap-2">
+          <Label for="cat-birth-date">Date de naissance</Label>
+          <Input id="cat-birth-date" v-model="birthDate" type="date" />
         </div>
 
         <label class="flex items-center gap-2 text-sm text-muted-foreground">

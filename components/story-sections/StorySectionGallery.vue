@@ -34,10 +34,7 @@ const props = defineProps<{
       </p>
     </div>
 
-    <div
-      v-if="props.photos.length"
-      class="rounded-[1.25rem] border border-[#ede5dd] bg-white/80 p-3 shadow-[0_10px_28px_rgba(58,46,40,0.05)]"
-    >
+    <div v-if="props.photos.length">
       <Carousel
         class="w-full px-10 md:px-12"
         :opts="{

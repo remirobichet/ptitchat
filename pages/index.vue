@@ -4,8 +4,8 @@ import {
   BookOpenText,
   CalendarDays,
   ChevronDown,
-  Heart,
   Images,
+  Tag,
 } from "lucide-vue-next";
 import type {
   CatRecord,
@@ -120,18 +120,28 @@ const storyAnchorPhotos = computed(() => previewPhotos.value.slice(0, 3));
 const totalPhotos = computed(() => photos.value?.length || 0);
 const totalSections = computed(() => storySections.value?.length || 0);
 
-const catYear = computed(() => {
-  if (!cat.value?.created) {
+function parseDate(value: string) {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return new Date(`${value}T00:00:00`);
+  }
+
+  return new Date(value);
+}
+
+const catBirthDateLabel = computed(() => {
+  if (!cat.value?.birthDate) {
     return null;
   }
 
-  const createdDate = new Date(cat.value.created);
+  const birthDate = parseDate(cat.value.birthDate);
 
-  if (Number.isNaN(createdDate.getTime())) {
+  if (Number.isNaN(birthDate.getTime())) {
     return null;
   }
 
-  return String(createdDate.getFullYear());
+  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(
+    birthDate,
+  );
 });
 
 const coverUrl = computed(() => {
@@ -169,10 +179,17 @@ const heroSummary = computed(() => {
 const heroBadges = computed(() => {
   const badges: Array<{ icon: Component; label: string }> = [];
 
-  if (catYear.value) {
+  if (catBirthDateLabel.value) {
     badges.push({
       icon: CalendarDays,
-      label: `Avec nous depuis ${catYear.value}`,
+      label: `Né le ${catBirthDateLabel.value}`,
+    });
+  }
+
+  if (cat.value?.alsoKnownAs?.trim()) {
+    badges.push({
+      icon: Tag,
+      label: `Aussi appelé ${cat.value.alsoKnownAs.trim()}`,
     });
   }
 
@@ -189,11 +206,6 @@ const heroBadges = computed(() => {
       label: `${totalSections.value} chapitre${totalSections.value > 1 ? "s" : ""}`,
     });
   }
-
-  badges.push({
-    icon: Heart,
-    label: "Beaucoup trop aimé",
-  });
 
   return badges;
 });

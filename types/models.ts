@@ -8,6 +8,8 @@ export type CatRecord = BaseRecord & {
   name: string;
   slug: string;
   description?: string;
+  alsoKnownAs?: string;
+  birthDate?: string;
   coverPhoto?: string;
   published?: boolean;
 };

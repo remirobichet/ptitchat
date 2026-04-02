@@ -21,6 +21,8 @@ async function onCreateCat(payload: {
   name: string;
   slug: string;
   description: string;
+  alsoKnownAs: string;
+  birthDate: string | null;
   published: boolean;
   coverPhoto: string | null;
 }) {
@@ -32,6 +34,8 @@ async function onCreateCat(payload: {
       name: payload.name,
       slug: payload.slug,
       description: payload.description,
+      alsoKnownAs: payload.alsoKnownAs.trim(),
+      birthDate: payload.birthDate || null,
       published: payload.published,
       coverPhoto: payload.coverPhoto || null,
     });
