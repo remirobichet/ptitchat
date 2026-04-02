@@ -54,7 +54,7 @@ const props = defineProps<{
             <figure
               class="overflow-hidden rounded-[1rem] border border-[#ede5dd] bg-white p-2 shadow-[0_8px_24px_rgba(58,46,40,0.05)]"
             >
-              <img
+              <ZoomableImage
                 v-if="photo.image"
                 :src="props.photoUrl(photo)"
                 :alt="
@@ -62,7 +62,8 @@ const props = defineProps<{
                   props.section.title ||
                   `Photo de ${props.catName}`
                 "
-                class="block h-72 w-full rounded-[0.85rem] object-cover transition duration-500 hover:scale-[1.02]"
+                :caption="photo.caption"
+                img-class="block h-72 w-full rounded-[0.85rem] object-cover transition duration-500 hover:scale-[1.02]"
               />
               <figcaption
                 v-if="photo.caption"

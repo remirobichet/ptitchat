@@ -39,13 +39,17 @@ const hasSinglePhoto = computed(() => props.photos.length === 1);
         :key="photo.id"
         class="overflow-hidden rounded-[1rem] border border-[#ede5dd] bg-white p-2 shadow-[0_8px_24px_rgba(58,46,40,0.05)]"
       >
-        <img
+        <ZoomableImage
           :src="props.photoUrl(photo)"
           :alt="
             photo.caption || props.section.title || `Photo de ${props.catName}`
           "
-          class="w-full rounded-[0.85rem] object-cover transition duration-500 hover:scale-[1.03]"
-          :class="hasSinglePhoto ? 'h-80 md:h-[26rem]' : 'h-56'"
+          :caption="photo.caption"
+          :img-class="
+            hasSinglePhoto
+              ? 'w-full rounded-[0.85rem] object-cover transition duration-500 hover:scale-[1.03] h-80 md:h-[26rem]'
+              : 'w-full rounded-[0.85rem] object-cover transition duration-500 hover:scale-[1.03] h-56'
+          "
         />
         <figcaption
           v-if="photo.caption"

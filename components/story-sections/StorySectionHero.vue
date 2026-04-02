@@ -18,14 +18,15 @@ const firstPhoto = computed(() => props.photos[0]);
       v-if="firstPhoto?.image"
       class="relative overflow-hidden rounded-2xl"
     >
-      <img
+      <ZoomableImage
         :src="props.photoUrl(firstPhoto)"
         :alt="
           firstPhoto.caption ||
           props.section.title ||
           `Photo de ${props.catName}`
         "
-        class="h-72 w-full rounded-2xl object-cover transition duration-500 hover:scale-[1.02] md:h-[26rem]"
+        :caption="firstPhoto.caption"
+        img-class="h-72 w-full rounded-2xl object-cover transition duration-500 hover:scale-[1.02] md:h-[26rem]"
       />
     </figure>
 

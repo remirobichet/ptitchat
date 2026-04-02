@@ -52,10 +52,11 @@ const photoRows = computed(() => {
           class="overflow-hidden rounded-[1.25rem] border border-[#ede5dd] bg-white p-2 shadow-[0_16px_34px_rgba(115,82,63,0.06)] transition duration-200 hover:-translate-y-1"
           :class="photoIndex === 1 ? 'lg:translate-y-6' : ''"
         >
-          <img
+          <ZoomableImage
             :src="photoUrl(photo)"
             :alt="photo.caption || `Photo de ${props.catName}`"
-            class="block h-72 w-full rounded-[1rem] object-cover transition duration-500 hover:scale-[1.03]"
+            :caption="photo.caption"
+            img-class="block h-72 w-full rounded-[1rem] object-cover transition duration-500 hover:scale-[1.03]"
           />
           <figcaption
             v-if="photo.caption"

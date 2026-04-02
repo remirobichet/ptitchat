@@ -288,11 +288,12 @@ useHead(() => ({
             <figure
               class="hero-float relative h-full w-full overflow-hidden rounded-full border border-white/70 bg-white p-2 shadow-[0_20px_60px_rgba(212,131,107,0.22),0_8px_24px_rgba(58,46,40,0.08)]"
             >
-              <img
+              <ZoomableImage
                 v-if="coverUrl"
                 :src="coverUrl"
                 :alt="cat.name"
-                class="h-full w-full rounded-full object-cover"
+                img-class="h-full w-full rounded-full object-cover"
+                button-class="h-full w-full rounded-full"
               />
               <div
                 v-else
@@ -339,10 +340,11 @@ useHead(() => ({
               class="overflow-hidden rounded-2xl border border-white/70 bg-white/85 p-2 shadow-[0_12px_30px_rgba(120,89,69,0.08)]"
               :class="index === 1 ? 'translate-y-3' : ''"
             >
-              <img
+              <ZoomableImage
                 :src="photo.imageUrl"
                 :alt="photo.caption || `Photo de ${cat.name}`"
-                class="h-28 w-full rounded-xl object-cover md:h-36"
+                :caption="photo.caption"
+                img-class="h-28 w-full rounded-xl object-cover md:h-36"
               />
             </article>
           </div>
