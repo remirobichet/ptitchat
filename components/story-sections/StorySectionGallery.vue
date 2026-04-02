@@ -15,8 +15,6 @@ const props = defineProps<{
   catName: string;
   index: number;
 }>();
-
-const useGrid = computed(() => props.photos.length <= 2);
 </script>
 
 <template>
@@ -40,43 +38,18 @@ const useGrid = computed(() => props.photos.length <= 2);
       v-if="props.photos.length"
       class="rounded-[1.25rem] border border-[#ede5dd] bg-white/80 p-3 shadow-[0_10px_28px_rgba(58,46,40,0.05)]"
     >
-      <div v-if="useGrid" class="grid gap-3 sm:grid-cols-2">
-        <figure
-          v-for="photo in props.photos"
-          :key="photo.id"
-          class="overflow-hidden rounded-[1rem] border border-[#ede5dd] bg-white p-2"
-        >
-          <img
-            :src="props.photoUrl(photo)"
-            :alt="
-              photo.caption ||
-              props.section.title ||
-              `Photo de ${props.catName}`
-            "
-            class="h-72 w-full rounded-[0.85rem] object-cover transition duration-500 hover:scale-[1.02]"
-          />
-          <figcaption
-            v-if="photo.caption"
-            class="px-2.5 pb-1 pt-3 text-sm font-semibold text-[#8c7b72]"
-          >
-            {{ photo.caption }}
-          </figcaption>
-        </figure>
-      </div>
-
       <Carousel
-        v-else
         class="w-full px-10 md:px-12"
         :opts="{
           align: 'start',
-          loop: props.photos.length > 3,
+          loop: props.photos.length > 1,
         }"
       >
         <CarouselContent class="-ml-2 md:-ml-4">
           <CarouselItem
             v-for="photo in props.photos"
             :key="photo.id"
-            class="pl-2 md:basis-1/2 md:pl-4 xl:basis-1/3"
+            class="basis-full pl-2 md:pl-4"
           >
             <figure
               class="overflow-hidden rounded-[1rem] border border-[#ede5dd] bg-white p-2 shadow-[0_8px_24px_rgba(58,46,40,0.05)]"
