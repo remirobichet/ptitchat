@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import CardContent from "~/components/ui/CardContent.vue";
-import CardDescription from "~/components/ui/CardDescription.vue";
-import CardHeader from "~/components/ui/CardHeader.vue";
-import CardTitle from "~/components/ui/CardTitle.vue";
 import {
   Carousel,
   CarouselContent,
@@ -16,50 +12,88 @@ const props = defineProps<{
   section: StorySectionRecord;
   photos: PhotoRecord[];
   photoUrl: (photo: PhotoRecord) => string;
+  catName: string;
+  index: number;
 }>();
+
+const useGrid = computed(() => props.photos.length <= 2);
 </script>
 
 <template>
-  <div>
-    <CardHeader
-      v-if="props.section.title || props.section.text"
-      class="space-y-2 p-5 pb-0 md:p-6 md:pb-0"
-    >
-      <CardTitle v-if="props.section.title" class="text-xl">
+  <div class="grid gap-5 p-5 md:p-8">
+    <div class="rounded-[1.25rem] border border-[#ede5dd] bg-[#fffaf7] p-5">
+      <h3
+        v-if="props.section.title"
+        class="font-['Playfair_Display'] text-[2rem] font-bold leading-none text-[#3a2e28]"
+      >
         {{ props.section.title }}
-      </CardTitle>
-      <CardDescription v-if="props.section.text" class="whitespace-pre-line">
+      </h3>
+      <p
+        v-if="props.section.text"
+        class="mt-3 whitespace-pre-line text-[0.95rem] leading-7 text-[#8c7b72] md:text-lg"
+      >
         {{ props.section.text }}
-      </CardDescription>
-    </CardHeader>
+      </p>
+    </div>
 
-    <CardContent
+    <div
       v-if="props.photos.length"
-      class="p-5 md:p-6"
-      :class="props.section.title || props.section.text ? 'pt-4 md:pt-4' : ''"
+      class="rounded-[1.25rem] border border-[#ede5dd] bg-white/80 p-3 shadow-[0_10px_28px_rgba(58,46,40,0.05)]"
     >
+      <div v-if="useGrid" class="grid gap-3 sm:grid-cols-2">
+        <figure
+          v-for="photo in props.photos"
+          :key="photo.id"
+          class="overflow-hidden rounded-[1rem] border border-[#ede5dd] bg-white p-2"
+        >
+          <img
+            :src="props.photoUrl(photo)"
+            :alt="
+              photo.caption ||
+              props.section.title ||
+              `Photo de ${props.catName}`
+            "
+            class="h-72 w-full rounded-[0.85rem] object-cover transition duration-500 hover:scale-[1.02]"
+          />
+          <figcaption
+            v-if="photo.caption"
+            class="px-2.5 pb-1 pt-3 text-sm font-semibold text-[#8c7b72]"
+          >
+            {{ photo.caption }}
+          </figcaption>
+        </figure>
+      </div>
+
       <Carousel
-        class="w-full"
+        v-else
+        class="w-full px-10 md:px-12"
         :opts="{
           align: 'start',
+          loop: props.photos.length > 3,
         }"
       >
         <CarouselContent class="-ml-2 md:-ml-4">
           <CarouselItem
             v-for="photo in props.photos"
             :key="photo.id"
-            class="pl-2 md:basis-1/2 md:pl-4 lg:basis-1/3"
+            class="pl-2 md:basis-1/2 md:pl-4 xl:basis-1/3"
           >
-            <figure class="overflow-hidden rounded-md border border-border">
+            <figure
+              class="overflow-hidden rounded-[1rem] border border-[#ede5dd] bg-white p-2 shadow-[0_8px_24px_rgba(58,46,40,0.05)]"
+            >
               <img
                 v-if="photo.image"
                 :src="props.photoUrl(photo)"
-                :alt="photo.caption || props.section.title || 'Photo du chat'"
-                class="block aspect-square w-full object-cover"
+                :alt="
+                  photo.caption ||
+                  props.section.title ||
+                  `Photo de ${props.catName}`
+                "
+                class="block h-72 w-full rounded-[0.85rem] object-cover transition duration-500 hover:scale-[1.02]"
               />
               <figcaption
                 v-if="photo.caption"
-                class="px-3 py-2 text-xs text-muted-foreground"
+                class="px-2.5 pb-1 pt-3 text-sm font-semibold text-[#8c7b72]"
               >
                 {{ photo.caption }}
               </figcaption>
@@ -68,12 +102,12 @@ const props = defineProps<{
         </CarouselContent>
 
         <CarouselPrevious
-          class="left-3 top-1/2 h-9 w-9 -translate-y-1/2 bg-background/90"
+          class="left-1 top-1/2 h-10 w-10 -translate-y-1/2 border-[#ede5dd] bg-white/95 text-[#3a2e28] shadow-[0_10px_20px_rgba(120,82,63,0.1)]"
         />
         <CarouselNext
-          class="right-3 top-1/2 h-9 w-9 -translate-y-1/2 bg-background/90"
+          class="right-1 top-1/2 h-10 w-10 -translate-y-1/2 border-[#ede5dd] bg-white/95 text-[#3a2e28] shadow-[0_10px_20px_rgba(120,82,63,0.1)]"
         />
       </Carousel>
-    </CardContent>
+    </div>
   </div>
 </template>

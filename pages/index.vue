@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import type { CSSProperties } from "vue";
-import Card from "~/components/ui/Card.vue";
-import CardContent from "~/components/ui/CardContent.vue";
-import CardDescription from "~/components/ui/CardDescription.vue";
-import CardHeader from "~/components/ui/CardHeader.vue";
-import CardTitle from "~/components/ui/CardTitle.vue";
+import type { Component } from "vue";
+import {
+  BookOpenText,
+  CalendarDays,
+  ChevronDown,
+  Heart,
+  Images,
+} from "lucide-vue-next";
 import type {
   CatRecord,
   PhotoRecord,
@@ -106,12 +108,14 @@ const hasStorySections = computed(() => Boolean(storySections.value?.length));
 const previewPhotos = computed(() => {
   return (photos.value || [])
     .filter((photo) => Boolean(photo.image))
-    .slice(0, 6)
+    .slice(0, 7)
     .map((photo) => ({
       ...photo,
       imageUrl: photo.image ? pb.files.getURL(photo, photo.image) : "",
     }));
 });
+
+const storyAnchorPhotos = computed(() => previewPhotos.value.slice(0, 3));
 
 const totalPhotos = computed(() => photos.value?.length || 0);
 const totalSections = computed(() => storySections.value?.length || 0);
@@ -130,67 +134,17 @@ const catYear = computed(() => {
   return String(createdDate.getFullYear());
 });
 
-const heroPointer = ref({ x: 0, y: 0 });
-const reducedMotion = ref(false);
-
-const heroImageStyle = computed<CSSProperties>(() => {
-  if (reducedMotion.value) {
-    return {
-      transform: "translate3d(0, 0, 0)",
-    };
-  }
-
-  return {
-    transform: `translate3d(${heroPointer.value.x * 10}px, ${heroPointer.value.y * 10}px, 0) scale(1.03)`,
-  };
-});
-
-const orbOneStyle = computed<CSSProperties>(() => ({
-  transform: `translate3d(${heroPointer.value.x * -22}px, ${heroPointer.value.y * -14}px, 0)`,
-}));
-
-const orbTwoStyle = computed<CSSProperties>(() => ({
-  transform: `translate3d(${heroPointer.value.x * 16}px, ${heroPointer.value.y * 20}px, 0)`,
-}));
-
-const pawTrailStyle = computed<CSSProperties>(() => ({
-  transform: `translate3d(${heroPointer.value.x * -12}px, ${heroPointer.value.y * 10}px, 0)`,
-}));
-
-function onHeroPointerMove(event: PointerEvent): void {
-  if (reducedMotion.value) {
-    return;
-  }
-
-  const target = event.currentTarget;
-
-  if (!(target instanceof HTMLElement)) {
-    return;
-  }
-
-  const rect = target.getBoundingClientRect();
-  const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-  const y = ((event.clientY - rect.top) / rect.height) * 2 - 1;
-
-  heroPointer.value = {
-    x: Math.max(-1, Math.min(1, x)),
-    y: Math.max(-1, Math.min(1, y)),
-  };
-}
-
-function onHeroPointerLeave(): void {
-  heroPointer.value = { x: 0, y: 0 };
-}
-
-onMounted(() => {
-  reducedMotion.value = window.matchMedia(
-    "(prefers-reduced-motion: reduce)",
-  ).matches;
-});
-
 const coverUrl = computed(() => {
   if (!cat.value?.coverPhoto) {
-    return "";
+    const firstPhoto = (photos.value || []).find((photo) =>
+      Boolean(photo.image),
+    );
+
+    if (!firstPhoto?.image) {
+      return "";
+    }
+
+    return pb.files.getURL(firstPhoto, firstPhoto.image);
   }
 
   const photoRecord = (photos.value || []).find(
@@ -202,6 +156,46 @@ const coverUrl = computed(() => {
   }
 
   return "";
+});
+
+const heroSummary = computed(() => {
+  if (cat.value?.description?.trim()) {
+    return cat.value.description.trim();
+  }
+
+  return "Un concentré de douceur, de siestes impeccables et de souvenirs à feuilleter.";
+});
+
+const heroBadges = computed(() => {
+  const badges: Array<{ icon: Component; label: string }> = [];
+
+  if (catYear.value) {
+    badges.push({
+      icon: CalendarDays,
+      label: `Avec nous depuis ${catYear.value}`,
+    });
+  }
+
+  if (totalPhotos.value > 0) {
+    badges.push({
+      icon: Images,
+      label: `${totalPhotos.value} photo${totalPhotos.value > 1 ? "s" : ""}`,
+    });
+  }
+
+  if (totalSections.value > 0) {
+    badges.push({
+      icon: BookOpenText,
+      label: `${totalSections.value} chapitre${totalSections.value > 1 ? "s" : ""}`,
+    });
+  }
+
+  badges.push({
+    icon: Heart,
+    label: "Beaucoup trop aimé",
+  });
+
+  return badges;
 });
 
 useHead(() => ({
@@ -226,7 +220,7 @@ useHead(() => ({
     },
     {
       rel: "stylesheet",
-      href: "https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Nunito:wght@400;600;700;800&display=swap",
+      href: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700;800;900&display=swap",
     },
   ],
 }));
@@ -234,174 +228,262 @@ useHead(() => ({
 
 <template>
   <main
-    class="relative isolate min-h-screen overflow-hidden bg-[linear-gradient(180deg,#fffaf1_0%,#f7fbff_48%,#ffffff_100%)] font-['Nunito']"
+    class="relative isolate min-h-screen overflow-hidden bg-[#fdf8f3] font-['DM_Sans'] text-[#3a2e28]"
   >
+    <div class="pointer-events-none absolute inset-0 overflow-hidden">
+      <div
+        class="absolute right-[-7rem] top-[-6rem] h-[26rem] w-[26rem] rounded-full bg-[#f5e6de]/80 blur-3xl"
+      />
+      <div
+        class="absolute left-[-6rem] top-[42%] h-80 w-80 rounded-full bg-[#e8f0e8]/85 blur-3xl"
+      />
+      <div
+        class="absolute bottom-[6%] right-[-4rem] h-[24rem] w-[24rem] rounded-full bg-[#fde8d8]/90 blur-3xl"
+      />
+    </div>
+
     <section
-      class="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8 md:px-6 md:py-12"
+      class="relative z-10 mx-auto flex w-full max-w-7xl flex-col px-3 py-6 md:px-4 md:py-8"
     >
-      <Card
+      <div
         v-if="catPending"
-        class="border-slate-900/10 bg-white/80 backdrop-blur-md"
+        class="rounded-[1.75rem] border border-[#ede5dd] bg-white/80 px-5 py-5 text-sm text-[#8c7b72] shadow-[0_24px_50px_rgba(119,89,71,0.08)] backdrop-blur-md"
       >
-        <CardContent class="p-5 text-sm text-muted-foreground">
-          Un coussin est en train d'etre installe...
-        </CardContent>
-      </Card>
+        <div>Un coussin est en train d'être installé...</div>
+      </div>
 
-      <Card
+      <div
         v-else-if="catError"
-        class="border-slate-900/10 bg-white/80 backdrop-blur-md"
+        class="rounded-[1.75rem] border border-[#ede5dd] bg-white/80 px-5 py-5 text-sm text-destructive shadow-[0_24px_50px_rgba(119,89,71,0.08)] backdrop-blur-md"
       >
-        <CardContent class="p-5 text-sm text-destructive">
-          Erreur : {{ catError.message }}
-        </CardContent>
-      </Card>
+        Erreur : {{ catError.message }}
+      </div>
 
-      <Card
+      <div
         v-else-if="!cat"
-        class="border-slate-900/10 bg-white/80 backdrop-blur-md"
+        class="rounded-[1.75rem] border border-[#ede5dd] bg-white/80 px-5 py-6 shadow-[0_24px_50px_rgba(119,89,71,0.08)] backdrop-blur-md"
       >
-        <CardHeader>
-          <CardTitle class="text-2xl">Chat introuvable</CardTitle>
-          <CardDescription>
-            Aucun chat publie ne correspond a ce sous-domaine.
-          </CardDescription>
-        </CardHeader>
-      </Card>
+        <h1 class="font-['Playfair_Display'] text-2xl font-bold text-[#3a2e28]">
+          Chat introuvable
+        </h1>
+        <p class="mt-2 text-sm text-[#8c7b72]">
+          Aucun chat publié ne correspond à ce sous-domaine.
+        </p>
+      </div>
 
       <template v-else>
-        <section
-          class="grid gap-8 rounded-[1.75rem] border border-slate-900/10 bg-gradient-to-br from-white/95 to-amber-50/60 p-6 shadow-[0_24px_50px_rgba(14,31,53,0.14)] md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] md:items-center md:p-9 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4"
-          @pointermove="onHeroPointerMove"
-          @pointerleave="onHeroPointerLeave"
+        <header
+          class="relative flex min-h-[100svh] flex-col items-center justify-center px-2 py-12 text-center md:px-3"
         >
-          <div class="flex flex-col gap-4">
-            <p
-              class="m-0 text-xs font-bold uppercase tracking-[0.18em] text-slate-900/65"
+          <div
+            class="relative mb-10 h-[13.5rem] w-[13.5rem] md:h-[21rem] md:w-[21rem]"
+          >
+            <div
+              class="hero-ring absolute inset-[-1.75rem] rounded-full border border-[#ede5dd]"
+            />
+            <div
+              class="hero-ring hero-ring-delayed absolute inset-[-0.875rem] rounded-full border-2 border-[#f5e6de]"
+            />
+
+            <figure
+              class="hero-float relative h-full w-full overflow-hidden rounded-full border border-white/70 bg-white p-2 shadow-[0_20px_60px_rgba(212,131,107,0.22),0_8px_24px_rgba(58,46,40,0.08)]"
             >
-              Bienvenue dans la taniere de
-            </p>
+              <img
+                v-if="coverUrl"
+                :src="coverUrl"
+                :alt="cat.name"
+                class="h-full w-full rounded-full object-cover"
+              />
+              <div
+                v-else
+                class="flex h-full w-full items-center justify-center rounded-full bg-white/80 text-sm text-[#8c7b72]"
+              >
+                Pas encore de portrait
+              </div>
+            </figure>
+          </div>
+
+          <div class="max-w-4xl animate-[fade-up_0.8s_ease-out_0.3s_both]">
             <h1
-              class="m-0 font-['Baloo_2'] text-[clamp(2.25rem,5vw,4rem)] leading-[0.95] text-slate-900"
+              class="font-['Playfair_Display'] text-[clamp(3rem,10vw,6rem)] font-black leading-none tracking-[-0.02em] text-[#3a2e28]"
             >
               {{ cat.name }}
             </h1>
             <p
-              class="m-0 max-w-[48ch] text-[1.05rem] font-semibold text-slate-900/80"
+              class="mx-auto mt-4 max-w-2xl font-['Playfair_Display'] text-lg italic text-[#8c7b72] md:text-2xl"
             >
-              {{
-                cat.description ||
-                "Un chat extraordinaire avec beaucoup de style."
-              }}
+              {{ heroSummary }}
             </p>
-
-            <div class="flex flex-wrap gap-2">
-              <span
-                class="rounded-full border border-slate-900/15 bg-white/90 px-3 py-1 text-sm font-bold text-slate-900/75"
-                >{{ totalPhotos }} souvenirs</span
-              >
-              <span
-                class="rounded-full border border-slate-900/15 bg-white/90 px-3 py-1 text-sm font-bold text-slate-900/75"
-                >{{ totalSections }} moments racontes</span
-              >
-              <span
-                v-if="catYear"
-                class="rounded-full border border-slate-900/15 bg-white/90 px-3 py-1 text-sm font-bold text-slate-900/75"
-                >Star depuis {{ catYear }}</span
-              >
-            </div>
-
-            <div class="mt-1 flex flex-wrap gap-3">
-              <a
-                class="inline-flex items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-extrabold tracking-[0.01em] text-white transition duration-200 hover:-translate-y-0.5 hover:bg-sky-900 hover:shadow-[0_10px_20px_rgba(16,42,67,0.25)]"
-                href="#story"
-                >Explorer son histoire</a
-              >
-              <a
-                v-if="previewPhotos.length"
-                class="inline-flex items-center justify-center rounded-full border border-slate-900/20 bg-white/90 px-5 py-3 text-sm font-extrabold tracking-[0.01em] text-slate-900 transition duration-200 hover:-translate-y-0.5 hover:bg-white"
-                href="#gallery"
-              >
-                Voir les photos
-              </a>
-            </div>
           </div>
 
-          <div class="flex items-center justify-center">
-            <figure
-              v-if="coverUrl"
-              class="w-full max-w-[26rem] overflow-hidden rounded-3xl border-4 border-white/85 shadow-[0_20px_34px_rgba(15,23,42,0.2)] transition-transform duration-200 ease-out"
-              :style="heroImageStyle"
+          <div
+            class="mt-8 flex max-w-4xl flex-wrap justify-center gap-2.5 animate-[fade-up_0.8s_ease-out_0.5s_both]"
+          >
+            <span
+              v-for="badge in heroBadges"
+              :key="badge.label"
+              class="inline-flex items-center gap-2 rounded-full border border-[#ede5dd] bg-white/90 px-4 py-2 text-sm text-[#8c7b72] shadow-[0_4px_12px_rgba(212,131,107,0.08)] transition hover:-translate-y-0.5 hover:border-[#d4836b] hover:text-[#d4836b]"
+            >
+              <component :is="badge.icon" class="h-4 w-4 text-[#d4836b]" />
+              {{ badge.label }}
+            </span>
+          </div>
+
+          <div
+            v-if="storyAnchorPhotos.length"
+            class="mt-8 grid w-full max-w-xl grid-cols-3 gap-3 animate-[fade-up_0.8s_ease-out_0.7s_both]"
+          >
+            <article
+              v-for="(photo, index) in storyAnchorPhotos"
+              :key="photo.id"
+              class="overflow-hidden rounded-2xl border border-white/70 bg-white/85 p-2 shadow-[0_12px_30px_rgba(120,89,69,0.08)]"
+              :class="index === 1 ? 'translate-y-3' : ''"
             >
               <img
-                :src="coverUrl"
-                :alt="cat.name"
-                class="h-[clamp(16rem,45vw,23rem)] w-full object-cover"
+                :src="photo.imageUrl"
+                :alt="photo.caption || `Photo de ${cat.name}`"
+                class="h-28 w-full rounded-xl object-cover md:h-36"
               />
-            </figure>
-            <div
-              v-else
-              class="w-full max-w-[22rem] rounded-2xl border-2 border-dashed border-slate-900/20 bg-white/80 px-5 py-10 text-center font-bold text-slate-900/70"
-            >
-              Pas encore de photo de couverture
-            </div>
+            </article>
           </div>
-        </section>
+        </header>
 
         <section
-          v-if="previewPhotos.length"
-          id="gallery"
-          class="grid grid-cols-2 gap-4 md:grid-cols-3 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-700 motion-safe:delay-100"
+          class="mx-auto w-full max-w-6xl pb-12 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-700"
         >
-          <article
-            v-for="photo in previewPhotos"
-            :key="photo.id"
-            class="overflow-hidden rounded-2xl border border-slate-900/10 bg-white/90 shadow-[0_14px_28px_rgba(15,23,42,0.12)] transition duration-200 hover:-translate-y-1 hover:rotate-[-0.3deg] hover:shadow-[0_20px_34px_rgba(15,23,42,0.18)]"
-          >
-            <img
-              :src="photo.imageUrl"
-              :alt="photo.caption || `Photo de ${cat.name}`"
-              class="h-48 w-full object-cover md:h-56"
-            />
-            <p
-              class="m-0 px-3.5 pb-3.5 pt-2.5 text-sm font-bold text-slate-900/75"
-            >
-              {{ photo.caption || "Instant mignon" }}
-            </p>
-          </article>
-        </section>
-
-        <section
-          id="story"
-          class="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-700 motion-safe:delay-150"
-        >
-          <Card
+          <div
             v-if="storyPending || photosPending"
-            class="border-slate-900/10 bg-white/80 backdrop-blur-md"
+            class="rounded-[1.75rem] border border-[#ede5dd] bg-white/80 px-5 py-5 text-sm text-[#8c7b72] shadow-[0_24px_50px_rgba(119,89,71,0.08)] backdrop-blur-md"
           >
-            <CardContent class="p-5 text-sm text-muted-foreground">
-              Chargement du storytelling...
-            </CardContent>
-          </Card>
+            Chargement du storytelling...
+          </div>
 
-          <Card
+          <div
             v-else-if="storyError || photosError"
-            class="border-slate-900/10 bg-white/80 backdrop-blur-md"
+            class="rounded-[1.75rem] border border-[#ede5dd] bg-white/80 px-5 py-5 text-sm text-destructive shadow-[0_24px_50px_rgba(119,89,71,0.08)] backdrop-blur-md"
           >
-            <CardContent class="p-5 text-sm text-destructive">
-              Erreur : {{ storyError?.message || photosError?.message }}
-            </CardContent>
-          </Card>
+            Erreur : {{ storyError?.message || photosError?.message }}
+          </div>
 
           <StorySectionRenderer
             v-else-if="hasStorySections"
             :sections="storySections || []"
             :photos="photos || []"
+            :cat-name="cat.name"
           />
 
-          <PhotoGallery v-else :photos="photos || []" />
+          <PhotoGallery v-else :photos="photos || []" :cat-name="cat.name" />
         </section>
+
+        <footer class="pb-16 pt-4 text-center text-sm text-[#8c7b72]">
+          <div class="mx-auto mb-4 h-0.5 w-10 rounded-full bg-[#ede5dd]" />
+          <p class="inline-flex items-center gap-2">
+            All paws reserved
+            <Heart class="heart-beat h-4 w-4 fill-[#d4836b] text-[#d4836b]" />
+          </p>
+        </footer>
       </template>
     </section>
   </main>
 </template>
+
+<style scoped>
+@keyframes hero-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes ring-pulse {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.15;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes scroll-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  14% {
+    transform: scale(1.2);
+  }
+
+  28% {
+    transform: scale(1);
+  }
+
+  42% {
+    transform: scale(1.12);
+  }
+
+  56% {
+    transform: scale(1);
+  }
+}
+
+.hero-float {
+  animation: hero-float 6s ease-in-out infinite;
+}
+
+.hero-ring {
+  animation: ring-pulse 4s ease-in-out infinite;
+}
+
+.hero-ring-delayed {
+  animation-delay: 1s;
+}
+
+.scroll-line {
+  animation: scroll-pulse 2s ease-in-out infinite;
+}
+
+.heart-beat {
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-float,
+  .hero-ring,
+  .scroll-line,
+  .heart-beat {
+    animation: none;
+  }
+}
+</style>

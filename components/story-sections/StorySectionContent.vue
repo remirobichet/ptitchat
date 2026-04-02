@@ -1,46 +1,59 @@
 <script setup lang="ts">
-import CardContent from "~/components/ui/CardContent.vue";
-import CardDescription from "~/components/ui/CardDescription.vue";
-import CardHeader from "~/components/ui/CardHeader.vue";
-import CardTitle from "~/components/ui/CardTitle.vue";
 import type { PhotoRecord, StorySectionRecord } from "~/types/models";
 
 const props = defineProps<{
   section: StorySectionRecord;
   photos: PhotoRecord[];
   photoUrl: (photo: PhotoRecord) => string;
+  catName: string;
+  index: number;
 }>();
+
+const hasSinglePhoto = computed(() => props.photos.length === 1);
 </script>
 
 <template>
-  <div>
-    <CardHeader
-      v-if="props.section.title || props.section.text"
-      class="space-y-2 p-5 pb-0 md:p-6 md:pb-0"
-    >
-      <CardTitle v-if="props.section.title" class="text-xl">
+  <div class="grid gap-5 p-5 md:p-8">
+    <div class="rounded-[1.25rem] border border-[#ede5dd] bg-[#fffaf7] p-5">
+      <h3
+        v-if="props.section.title"
+        class="font-['Playfair_Display'] text-[2rem] font-bold leading-none text-[#3a2e28]"
+      >
         {{ props.section.title }}
-      </CardTitle>
-      <CardDescription
+      </h3>
+      <p
         v-if="props.section.text"
-        class="whitespace-pre-line text-base leading-relaxed text-foreground/90"
+        class="mt-3 whitespace-pre-line text-[0.95rem] leading-7 text-[#8c7b72] md:text-lg"
       >
         {{ props.section.text }}
-      </CardDescription>
-    </CardHeader>
+      </p>
+    </div>
 
-    <CardContent
+    <div
       v-if="props.photos.length"
-      class="grid gap-3 p-5 sm:grid-cols-2 md:p-6"
-      :class="props.section.title || props.section.text ? 'pt-4 md:pt-4' : ''"
+      class="grid gap-3"
+      :class="hasSinglePhoto ? 'md:grid-cols-1' : 'sm:grid-cols-2'"
     >
-      <img
+      <figure
         v-for="photo in props.photos"
         :key="photo.id"
-        :src="props.photoUrl(photo)"
-        :alt="photo.caption || props.section.title || 'Photo du chat'"
-        class="h-56 w-full rounded-md object-cover"
-      />
-    </CardContent>
+        class="overflow-hidden rounded-[1rem] border border-[#ede5dd] bg-white p-2 shadow-[0_8px_24px_rgba(58,46,40,0.05)]"
+      >
+        <img
+          :src="props.photoUrl(photo)"
+          :alt="
+            photo.caption || props.section.title || `Photo de ${props.catName}`
+          "
+          class="w-full rounded-[0.85rem] object-cover transition duration-500 hover:scale-[1.03]"
+          :class="hasSinglePhoto ? 'h-80 md:h-[26rem]' : 'h-56'"
+        />
+        <figcaption
+          v-if="photo.caption"
+          class="px-2.5 pb-1 pt-3 text-sm font-semibold text-[#8c7b72]"
+        >
+          {{ photo.caption }}
+        </figcaption>
+      </figure>
+    </div>
   </div>
 </template>

@@ -1,42 +1,50 @@
 <script setup lang="ts">
-import CardContent from "~/components/ui/CardContent.vue";
-import CardDescription from "~/components/ui/CardDescription.vue";
-import CardHeader from "~/components/ui/CardHeader.vue";
-import CardTitle from "~/components/ui/CardTitle.vue";
 import type { PhotoRecord, StorySectionRecord } from "~/types/models";
 
 const props = defineProps<{
   section: StorySectionRecord;
   photos: PhotoRecord[];
   photoUrl: (photo: PhotoRecord) => string;
+  catName: string;
+  index: number;
 }>();
 
 const firstPhoto = computed(() => props.photos[0]);
 </script>
 
 <template>
-  <div>
-    <CardContent v-if="firstPhoto?.image" class="grid gap-4 p-5 md:p-6">
+  <div class="grid gap-5 p-5 md:p-8">
+    <figure
+      v-if="firstPhoto?.image"
+      class="relative overflow-hidden rounded-2xl"
+    >
       <img
         :src="props.photoUrl(firstPhoto)"
-        :alt="firstPhoto.caption || props.section.title || 'Photo du chat'"
-        class="h-64 w-full rounded-md object-cover md:h-80"
+        :alt="
+          firstPhoto.caption ||
+          props.section.title ||
+          `Photo de ${props.catName}`
+        "
+        class="h-72 w-full rounded-2xl object-cover transition duration-500 hover:scale-[1.02] md:h-[26rem]"
       />
-    </CardContent>
+    </figure>
 
-    <CardHeader
+    <div
       v-if="props.section.title || props.section.text"
-      class="space-y-2 px-5 pb-5 pt-0 md:px-6 md:pb-6"
+      class="rounded-[1.25rem] border border-[#ede5dd] bg-[#fffaf7] px-5 py-5"
     >
-      <CardTitle v-if="props.section.title" class="text-2xl md:text-3xl">
+      <h3
+        v-if="props.section.title"
+        class="font-['Playfair_Display'] text-3xl font-bold leading-none text-[#3a2e28]"
+      >
         {{ props.section.title }}
-      </CardTitle>
-      <CardDescription
+      </h3>
+      <p
         v-if="props.section.text"
-        class="whitespace-pre-line text-base"
+        class="mt-3 whitespace-pre-line text-[0.95rem] leading-7 text-[#8c7b72] md:text-lg"
       >
         {{ props.section.text }}
-      </CardDescription>
-    </CardHeader>
+      </p>
+    </div>
   </div>
 </template>

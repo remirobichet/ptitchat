@@ -1,0 +1,1171 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mochi — Le Roi du Canapé</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --bg: #fdf8f3;
+        --fg: #3a2e28;
+        --muted: #8c7b72;
+        --accent: #d4836b;
+        --accent-light: #f5e6de;
+        --card: #ffffff;
+        --border: #ede5dd;
+        --sage: #9db09e;
+        --sage-light: #e8f0e8;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "DM Sans", sans-serif;
+        background-color: var(--bg);
+        color: var(--fg);
+        overflow-x: hidden;
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-family: "Playfair Display", serif;
+      }
+
+      /* ---- Blobs décoratifs en arrière-plan ---- */
+      .bg-blob {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(90px);
+        opacity: 0.3;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .blob-1 {
+        width: 420px;
+        height: 420px;
+        background: var(--accent-light);
+        top: -120px;
+        right: -120px;
+      }
+      .blob-2 {
+        width: 320px;
+        height: 320px;
+        background: var(--sage-light);
+        top: 42%;
+        left: -100px;
+      }
+      .blob-3 {
+        width: 380px;
+        height: 380px;
+        background: #fde8d8;
+        bottom: 8%;
+        right: -60px;
+      }
+
+      /* ---- Hero ---- */
+      .hero {
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1.5rem;
+        text-align: center;
+      }
+
+      .hero-photo-wrapper {
+        position: relative;
+        width: 270px;
+        height: 270px;
+        margin-bottom: 2.5rem;
+      }
+      @media (min-width: 768px) {
+        .hero-photo-wrapper {
+          width: 340px;
+          height: 340px;
+        }
+      }
+
+      .hero-photo {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow:
+          0 20px 60px rgba(212, 131, 107, 0.2),
+          0 8px 24px rgba(58, 46, 40, 0.08);
+        animation: heroFloat 6s ease-in-out infinite;
+      }
+      .hero-ring {
+        position: absolute;
+        border-radius: 50%;
+        border: 2px solid var(--accent-light);
+        animation: ringPulse 4s ease-in-out infinite;
+      }
+      .hero-ring-1 {
+        inset: -14px;
+      }
+      .hero-ring-2 {
+        inset: -28px;
+        border-color: var(--border);
+        animation-delay: 1s;
+      }
+
+      @keyframes heroFloat {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+      @keyframes ringPulse {
+        0%,
+        100% {
+          opacity: 0.7;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.15;
+          transform: scale(1.04);
+        }
+      }
+
+      .hero-name {
+        font-size: 4rem;
+        font-weight: 900;
+        color: var(--fg);
+        letter-spacing: -0.02em;
+        line-height: 1;
+        margin-bottom: 0.75rem;
+        opacity: 0;
+        animation: fadeUp 0.8s ease-out 0.3s forwards;
+      }
+      .hero-tagline {
+        font-family: "Playfair Display", serif;
+        font-style: italic;
+        font-size: 1.2rem;
+        color: var(--muted);
+        margin-bottom: 2rem;
+        opacity: 0;
+        animation: fadeUp 0.8s ease-out 0.5s forwards;
+      }
+      .hero-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        justify-content: center;
+        opacity: 0;
+        animation: fadeUp 0.8s ease-out 0.7s forwards;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.45rem 1rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 100px;
+        font-size: 0.85rem;
+        color: var(--muted);
+        transition: all 0.3s ease;
+        cursor: default;
+      }
+      .badge:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(212, 131, 107, 0.12);
+      }
+      .badge i {
+        font-size: 0.75rem;
+        color: var(--accent);
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(24px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .scroll-hint {
+        position: absolute;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--muted);
+        font-size: 0.75rem;
+        letter-spacing: 0.06em;
+        opacity: 0;
+        animation: fadeUp 0.8s ease-out 1.2s forwards;
+      }
+      .scroll-line {
+        width: 1px;
+        height: 30px;
+        background: linear-gradient(to bottom, var(--accent), transparent);
+        animation: scrollPulse 2s ease-in-out infinite;
+      }
+      @keyframes scrollPulse {
+        0%,
+        100% {
+          opacity: 0.3;
+        }
+        50% {
+          opacity: 0.9;
+        }
+      }
+
+      /* ---- Timeline ---- */
+      .timeline-section {
+        position: relative;
+        z-index: 1;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 4rem 1.5rem 6rem;
+      }
+      .timeline-wrapper {
+        position: relative;
+      }
+
+      .timeline-svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+        overflow: visible;
+      }
+      .timeline-path-bg {
+        fill: none;
+        stroke: var(--border);
+        stroke-width: 3;
+        stroke-linecap: round;
+      }
+      .timeline-path {
+        fill: none;
+        stroke: url(#pathGradient);
+        stroke-width: 2.5;
+        stroke-linecap: round;
+        filter: drop-shadow(0 0 8px rgba(212, 131, 107, 0.25));
+      }
+
+      .timeline-entry {
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+        gap: 2rem;
+        margin-bottom: 5rem;
+        opacity: 0;
+        transform: translateY(40px);
+        transition:
+          opacity 0.7s ease,
+          transform 0.7s ease;
+      }
+      .timeline-entry.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .timeline-entry:last-child {
+        margin-bottom: 0;
+      }
+
+      .timeline-dot-col {
+        flex-shrink: 0;
+        width: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 0.6rem;
+      }
+      .timeline-dot {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--card);
+        border: 3px solid var(--accent);
+        position: relative;
+        z-index: 2;
+        transition: box-shadow 0.4s ease;
+      }
+      .timeline-entry.visible .timeline-dot {
+        box-shadow: 0 0 0 5px rgba(212, 131, 107, 0.12);
+      }
+      .timeline-dot::after {
+        content: "";
+        position: absolute;
+        inset: -7px;
+        border-radius: 50%;
+        border: 1.5px solid var(--accent-light);
+        opacity: 0;
+      }
+      .timeline-entry.visible .timeline-dot::after {
+        animation: dotRing 3s ease-in-out infinite;
+      }
+      @keyframes dotRing {
+        0%,
+        100% {
+          opacity: 0.5;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0;
+          transform: scale(1.4);
+        }
+      }
+
+      .timeline-date {
+        margin-top: 0.75rem;
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        writing-mode: vertical-rl;
+      }
+
+      .timeline-card {
+        flex: 1;
+        position: relative;
+        background: var(--card);
+        border-radius: 1.25rem;
+        padding: 2rem;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 28px rgba(58, 46, 40, 0.04);
+        transition:
+          box-shadow 0.4s ease,
+          transform 0.4s ease;
+        overflow: hidden;
+      }
+      .timeline-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 2rem;
+        right: 2rem;
+        height: 3px;
+        background: linear-gradient(90deg, var(--accent), var(--sage));
+        border-radius: 0 0 3px 3px;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+      }
+      .timeline-entry.visible .timeline-card::before {
+        opacity: 1;
+      }
+
+      .timeline-card:hover {
+        box-shadow: 0 12px 48px rgba(58, 46, 40, 0.07);
+        transform: translateY(-3px);
+      }
+      .timeline-card h2 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--fg);
+        margin-bottom: 0.5rem;
+        line-height: 1.2;
+      }
+      .card-desc {
+        font-size: 0.95rem;
+        color: var(--muted);
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+      }
+
+      /* ---- Grille d'images ---- */
+      .image-grid {
+        display: grid;
+        gap: 0.75rem;
+      }
+      .image-grid.g2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .image-grid.g3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      @media (max-width: 640px) {
+        .image-grid.g3 {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .image-grid img {
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        border-radius: 0.75rem;
+        transition:
+          transform 0.5s ease,
+          box-shadow 0.4s ease;
+      }
+      .image-grid img:hover {
+        transform: scale(1.04);
+        box-shadow: 0 6px 20px rgba(58, 46, 40, 0.1);
+      }
+
+      /* ---- Carousel ---- */
+      .carousel-container {
+        position: relative;
+        margin: 0 -0.25rem;
+      }
+      .carousel-track {
+        display: flex;
+        gap: 0.75rem;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        padding: 0.5rem 0.25rem;
+        scrollbar-width: none;
+      }
+      .carousel-track::-webkit-scrollbar {
+        display: none;
+      }
+      .carousel-slide {
+        flex-shrink: 0;
+        width: 78%;
+        scroll-snap-align: center;
+      }
+      @media (min-width: 768px) {
+        .carousel-slide {
+          width: 62%;
+        }
+      }
+
+      .carousel-slide img {
+        width: 100%;
+        aspect-ratio: 4/3;
+        object-fit: cover;
+        border-radius: 1rem;
+        transition:
+          transform 0.5s ease,
+          box-shadow 0.4s ease;
+      }
+      .carousel-slide img:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 28px rgba(58, 46, 40, 0.1);
+      }
+
+      .carousel-dots {
+        display: flex;
+        justify-content: center;
+        gap: 0.45rem;
+        margin-top: 1rem;
+      }
+      .carousel-dot-btn {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--border);
+        border: none;
+        cursor: pointer;
+        transition: all 0.35s ease;
+        padding: 0;
+      }
+      .carousel-dot-btn.active {
+        background: var(--accent);
+        width: 26px;
+        border-radius: 100px;
+      }
+
+      .carousel-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: var(--fg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 0.75rem;
+        z-index: 3;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+        opacity: 0;
+      }
+      .carousel-container:hover .carousel-nav {
+        opacity: 1;
+      }
+      .carousel-nav:hover {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      .carousel-nav.prev {
+        left: 0;
+      }
+      .carousel-nav.next {
+        right: 0;
+      }
+
+      /* ---- Image pleine largeur ---- */
+      .full-image {
+        width: 100%;
+        border-radius: 1rem;
+        overflow: hidden;
+      }
+      .full-image img {
+        width: 100%;
+        aspect-ratio: 16/10;
+        object-fit: cover;
+        transition: transform 0.8s ease;
+      }
+      .full-image:hover img {
+        transform: scale(1.03);
+      }
+
+      /* ---- Footer ---- */
+      .page-footer {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        padding: 3rem 1.5rem 4rem;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .footer-line {
+        width: 40px;
+        height: 2px;
+        background: var(--border);
+        margin: 0 auto 1rem;
+        border-radius: 2px;
+      }
+      .heart-icon {
+        color: var(--accent);
+        display: inline-block;
+        animation: heartbeat 1.5s ease-in-out infinite;
+      }
+      @keyframes heartbeat {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        14% {
+          transform: scale(1.25);
+        }
+        28% {
+          transform: scale(1);
+        }
+        42% {
+          transform: scale(1.15);
+        }
+        56% {
+          transform: scale(1);
+        }
+      }
+
+      /* ---- Accessibilité ---- */
+      .carousel-dot-btn:focus-visible,
+      .carousel-nav:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      /* ---- Motion réduite ---- */
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+        .hero-photo {
+          animation: none;
+        }
+        .timeline-path {
+          stroke-dashoffset: 0 !important;
+        }
+      }
+
+      /* ---- Responsive mobile ---- */
+      @media (max-width: 640px) {
+        .hero-name {
+          font-size: 3rem;
+        }
+        .hero-tagline {
+          font-size: 1.05rem;
+          padding: 0 1rem;
+        }
+        .hero-photo-wrapper {
+          width: 210px;
+          height: 210px;
+        }
+        .timeline-entry {
+          gap: 0.75rem;
+          margin-bottom: 3.5rem;
+        }
+        .timeline-dot-col {
+          width: 28px;
+        }
+        .timeline-card {
+          padding: 1.25rem;
+          border-radius: 1rem;
+        }
+        .timeline-card h2 {
+          font-size: 1.3rem;
+        }
+        .timeline-card::before {
+          left: 1.25rem;
+          right: 1.25rem;
+        }
+        .timeline-date {
+          display: none;
+        }
+        .carousel-slide {
+          width: 88%;
+        }
+        .badge {
+          font-size: 0.78rem;
+          padding: 0.35rem 0.75rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Blobs d'ambiance -->
+    <div class="bg-blob blob-1" aria-hidden="true"></div>
+    <div class="bg-blob blob-2" aria-hidden="true"></div>
+    <div class="bg-blob blob-3" aria-hidden="true"></div>
+
+    <!-- ====== HERO ====== -->
+    <header class="hero">
+      <div class="hero-photo-wrapper">
+        <div class="hero-ring hero-ring-2" aria-hidden="true"></div>
+        <div class="hero-ring hero-ring-1" aria-hidden="true"></div>
+        <img
+          class="hero-photo"
+          src="https://picsum.photos/seed/fluffy-mochi-portrait/800/800"
+          alt="Mochi, un magnifique chat British Longhair aux yeux ronds"
+          loading="eager"
+        />
+      </div>
+      <h1 class="hero-name">Mochi</h1>
+      <p class="hero-tagline">
+        Roi du canapé, prince des siestes, seigneur des coeurs
+      </p>
+      <div class="hero-badges" role="list">
+        <span class="badge" role="listitem"
+          ><i class="fas fa-birthday-cake" aria-hidden="true"></i> 3 ans</span
+        >
+        <span class="badge" role="listitem"
+          ><i class="fas fa-paw" aria-hidden="true"></i> British Longhair</span
+        >
+        <span class="badge" role="listitem"
+          ><i class="fas fa-heart" aria-hidden="true"></i> Calme et câlin</span
+        >
+        <span class="badge" role="listitem"
+          ><i class="fas fa-weight-scale" aria-hidden="true"></i> 4,2 kg</span
+        >
+      </div>
+      <div class="scroll-hint" aria-hidden="true">
+        <span>Son histoire</span>
+        <div class="scroll-line"></div>
+      </div>
+    </header>
+
+    <!-- ====== TIMELINE ====== -->
+    <main class="timeline-section">
+      <div class="timeline-wrapper" id="timelineWrapper">
+        <!-- SVG du tracé courbe -->
+        <svg class="timeline-svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="pathGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#D4836B" />
+              <stop offset="50%" stop-color="#C49680" />
+              <stop offset="100%" stop-color="#9DB09E" />
+            </linearGradient>
+          </defs>
+          <path class="timeline-path-bg" id="pathBg" d="" />
+          <path class="timeline-path" id="pathMain" d="" />
+        </svg>
+
+        <!-- 1 — Son arrivée -->
+        <article class="timeline-entry">
+          <div class="timeline-dot-col">
+            <div class="timeline-dot" aria-hidden="true"></div>
+            <span class="timeline-date">Mars 2021</span>
+          </div>
+          <div class="timeline-card">
+            <h2>Son arrivée</h2>
+            <p class="card-desc">
+              Un petit bout de poils tremblant dans une boîte en carton. Les
+              yeux encore mi-clos, il a fallu à peine une seconde pour tomber
+              amoureux. Mochi ne pesait qu'un kilo — une plume avec des
+              moustaches.
+            </p>
+            <div class="carousel-container" data-carousel>
+              <div class="carousel-track">
+                <div class="carousel-slide">
+                  <img
+                    src="https://picsum.photos/seed/kitten-in-box-21/600/450"
+                    alt="Mochi découvert dans sa boîte d'arrivée"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="carousel-slide">
+                  <img
+                    src="https://picsum.photos/seed/tiny-paw-close/600/450"
+                    alt="Les toutes petites pattes de Mochi"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="carousel-slide">
+                  <img
+                    src="https://picsum.photos/seed/round-eyes-kitten/600/450"
+                    alt="Les grands yeux ronds de Mochi"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+              <button class="carousel-nav prev" aria-label="Photo précédente">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <button class="carousel-nav next" aria-label="Photo suivante">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+              <div class="carousel-dots"></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 2 — Premières explorations -->
+        <article class="timeline-entry">
+          <div class="timeline-dot-col">
+            <div class="timeline-dot" aria-hidden="true"></div>
+            <span class="timeline-date">Avril 2021</span>
+          </div>
+          <div class="timeline-card">
+            <h2>Premières explorations</h2>
+            <p class="card-desc">
+              Chaque pièce était une planète inconnue, chaque recoin un mystère
+              à résoudre. Le canapé est vite devenu son mont Everest — conquérir
+              les accoudoirs, tel était son premier grand défi.
+            </p>
+            <div class="image-grid g2">
+              <img
+                src="https://picsum.photos/seed/cat-explore-living/400/400"
+                alt="Mochi explorant le salon"
+                loading="lazy"
+              />
+              <img
+                src="https://picsum.photos/seed/curious-whiskers-face/400/400"
+                alt="Mochi curieux devant un mur"
+                loading="lazy"
+              />
+              <img
+                src="https://picsum.photos/seed/cat-under-furniture/400/400"
+                alt="Mochi caché sous un meuble"
+                loading="lazy"
+              />
+              <img
+                src="https://picsum.photos/seed/cat-climbed-shelf/400/400"
+                alt="Mochi juché sur une étagère"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </article>
+
+        <!-- 3 — L'art de la sieste -->
+        <article class="timeline-entry">
+          <div class="timeline-dot-col">
+            <div class="timeline-dot" aria-hidden="true"></div>
+            <span class="timeline-date">Été 2021</span>
+          </div>
+          <div class="timeline-card">
+            <h2>L'art de la sieste</h2>
+            <p class="card-desc">
+              Champion toutes catégories, seize heures par jour minimum. Du pain
+              de sucre au croissant, en passant par l'étoile de mer — Mochi a
+              perfectionné chaque posture avec une grâce inouïe.
+            </p>
+            <div class="carousel-container" data-carousel>
+              <div class="carousel-track">
+                <div class="carousel-slide">
+                  <img
+                    src="https://picsum.photos/seed/bread-loaf-cat-nap/600/450"
+                    alt="Mochi en position pain de sucre"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="carousel-slide">
+                  <img
+                    src="https://picsum.photos/seed/cozy-blanket-kitty/600/450"
+                    alt="Mochi niché dans un plaid"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="carousel-slide">
+                  <img
+                    src="https://picsum.photos/seed/starfish-sleep-pose/600/450"
+                    alt="Mochi en étoile de mer"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="carousel-slide">
+                  <img
+                    src="https://picsum.photos/seed/dreaming-soft-cat/600/450"
+                    alt="Mochi en train de rêver"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+              <button class="carousel-nav prev" aria-label="Photo précédente">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <button class="carousel-nav next" aria-label="Photo suivante">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+              <div class="carousel-dots"></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 4 — Son royaume -->
+        <article class="timeline-entry">
+          <div class="timeline-dot-col">
+            <div class="timeline-dot" aria-hidden="true"></div>
+            <span class="timeline-date">Hiver 2022</span>
+          </div>
+          <div class="timeline-card">
+            <h2>Son royaume</h2>
+            <p class="card-desc">
+              Les endroits qu'il s'est appropriés un à un. Le rebord de la
+              fenêtre pour guetter les pigeons, le coin du bureau pour
+              surveiller le travail, et le lit — toujours le lit — à cinq heures
+              du matin.
+            </p>
+            <div class="image-grid g3">
+              <img
+                src="https://picsum.photos/seed/cat-window-watch-22/400/400"
+                alt="Mochi au bord de la fenêtre"
+                loading="lazy"
+              />
+              <img
+                src="https://picsum.photos/seed/cat-desk-supervise/400/400"
+                alt="Mochi sur le bureau"
+                loading="lazy"
+              />
+              <img
+                src="https://picsum.photos/seed/cat-cozy-bed-nest/400/400"
+                alt="Mochi dans son lit préféré"
+                loading="lazy"
+              />
+              <img
+                src="https://picsum.photos/seed/cat-kitchen-tiles/400/400"
+                alt="Mochi dans la cuisine"
+                loading="lazy"
+              />
+              <img
+                src="https://picsum.photos/seed/cat-reading-corner/400/400"
+                alt="Mochi dans le coin lecture"
+                loading="lazy"
+              />
+              <img
+                src="https://picsum.photos/seed/cat-lap-warmth/400/400"
+                alt="Mochi sur les genoux"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </article>
+
+        <!-- 5 — Éclats de folie -->
+        <article class="timeline-entry">
+          <div class="timeline-dot-col">
+            <div class="timeline-dot" aria-hidden="true"></div>
+            <span class="timeline-date">Printemps 2023</span>
+          </div>
+          <div class="timeline-card">
+            <h2>Éclats de folie</h2>
+            <p class="card-desc">
+              Quand le sauvageon reprend le contrôle. Les fameuses zoomies à
+              deux heures du matin, les attaques surprises de bouts de papier,
+              et les courses folles d'un bout à l'autre de l'appartement — le
+              tout en silence absolu.
+            </p>
+            <div class="carousel-container" data-carousel>
+              <div class="carousel-track">
+                <div class="carousel-slide">
+                  <img
+                    src="https://picsum.photos/seed/cat-zoomies-blur/600/450"
+                    alt="Mochi en pleine course folle"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="carousel-slide">
+                  <img
+                    src="https://picsum.photos/seed/cat-play-paper-ball/600/450"
+                    alt="Mochi attaquant un bout de papier"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="carousel-slide">
+                  <img
+                    src="https://picsum.photos/seed/wild-jump-action/600/450"
+                    alt="Mochi faisant un saut spectaculaire"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+              <button class="carousel-nav prev" aria-label="Photo précédente">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <button class="carousel-nav next" aria-label="Photo suivante">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+              <div class="carousel-dots"></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 6 — Ensemble -->
+        <article class="timeline-entry">
+          <div class="timeline-dot-col">
+            <div class="timeline-dot" aria-hidden="true"></div>
+            <span class="timeline-date">Aujourd'hui</span>
+          </div>
+          <div class="timeline-card">
+            <h2>Ensemble</h2>
+            <p class="card-desc">
+              Ce lien invisible que les mots ne peuvent pas dire. Un
+              ronronnement dans le silence, une tête posée sur un bras, des yeux
+              qui se ferment quand on les regarde. Trois ans de bonheur simple,
+              pur, absolu.
+            </p>
+            <div class="full-image">
+              <img
+                src="https://picsum.photos/seed/cat-cuddle-warm-light/900/560"
+                alt="Mochi blotti tendrement contre son humain"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </article>
+      </div>
+    </main>
+
+    <!-- ====== FOOTER ====== -->
+    <footer class="page-footer">
+      <div class="footer-line" aria-hidden="true"></div>
+      <p>
+        Avec tout l'amour du monde, pour Mochi
+        <span class="heart-icon"><i class="fas fa-heart"></i></span>
+      </p>
+    </footer>
+
+    <script>
+      /* =============================================
+           Carousels : initialisation et navigation
+           ============================================= */
+      document.querySelectorAll("[data-carousel]").forEach((container) => {
+        const track = container.querySelector(".carousel-track");
+        const slides = container.querySelectorAll(".carousel-slide");
+        const dotsWrap = container.querySelector(".carousel-dots");
+        const prevBtn = container.querySelector(".carousel-nav.prev");
+        const nextBtn = container.querySelector(".carousel-nav.next");
+
+        // Création des points de navigation
+        slides.forEach((_, i) => {
+          const btn = document.createElement("button");
+          btn.className = "carousel-dot-btn" + (i === 0 ? " active" : "");
+          btn.setAttribute("aria-label", `Aller à la photo ${i + 1}`);
+          btn.addEventListener("click", () => goTo(i));
+          dotsWrap.appendChild(btn);
+        });
+        const dotBtns = dotsWrap.querySelectorAll(".carousel-dot-btn");
+
+        function goTo(index) {
+          const slide = slides[index];
+          if (!slide) return;
+          const tRect = track.getBoundingClientRect();
+          const sRect = slide.getBoundingClientRect();
+          const offset =
+            sRect.left -
+            tRect.left +
+            track.scrollLeft -
+            (tRect.width - sRect.width) / 2;
+          track.scrollTo({ left: offset, behavior: "smooth" });
+        }
+
+        function updateDots() {
+          const tRect = track.getBoundingClientRect();
+          const center = tRect.left + tRect.width / 2;
+          let best = 0,
+            bestDist = Infinity;
+          slides.forEach((s, i) => {
+            const sr = s.getBoundingClientRect();
+            const d = Math.abs(sr.left + sr.width / 2 - center);
+            if (d < bestDist) {
+              bestDist = d;
+              best = i;
+            }
+          });
+          dotBtns.forEach((b, i) => b.classList.toggle("active", i === best));
+        }
+
+        track.addEventListener("scroll", updateDots, { passive: true });
+
+        function currentIdx() {
+          const tRect = track.getBoundingClientRect();
+          const center = tRect.left + tRect.width / 2;
+          let idx = 0;
+          slides.forEach((s, i) => {
+            const sr = s.getBoundingClientRect();
+            if (Math.abs(sr.left + sr.width / 2 - center) < 120) idx = i;
+          });
+          return idx;
+        }
+
+        if (prevBtn)
+          prevBtn.addEventListener("click", () =>
+            goTo(Math.max(0, currentIdx() - 1)),
+          );
+        if (nextBtn)
+          nextBtn.addEventListener("click", () =>
+            goTo(Math.min(slides.length - 1, currentIdx() + 1)),
+          );
+      });
+
+      /* =============================================
+           Tracé courbe de la timeline (Catmull-Rom)
+           ============================================= */
+      function catmullRom(pts, tension) {
+        if (pts.length < 2) return "";
+        tension = tension || 0.28;
+        let d = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
+        for (let i = 0; i < pts.length - 1; i++) {
+          const p0 = pts[Math.max(0, i - 1)];
+          const p1 = pts[i];
+          const p2 = pts[i + 1];
+          const p3 = pts[Math.min(pts.length - 1, i + 2)];
+          const c1x = p1.x + (p2.x - p0.x) * tension;
+          const c1y = p1.y + (p2.y - p0.y) * tension;
+          const c2x = p2.x - (p3.x - p1.x) * tension;
+          const c2y = p2.y - (p3.y - p1.y) * tension;
+          d += ` C ${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+        }
+        return d;
+      }
+
+      let pathLength = 0;
+
+      function buildPath() {
+        const wrapper = document.getElementById("timelineWrapper");
+        const dots = document.querySelectorAll(".timeline-dot");
+        const pathBg = document.getElementById("pathBg");
+        const pathMain = document.getElementById("pathMain");
+        if (!wrapper || dots.length < 2) return;
+
+        const wRect = wrapper.getBoundingClientRect();
+
+        // Coordonnées des points (avec légère ondulation horizontale)
+        const pts = Array.from(dots).map((dot, i) => {
+          const r = dot.getBoundingClientRect();
+          return {
+            x: r.left + r.width / 2 - wRect.left + Math.sin(i * 1.6) * 8,
+            y: r.top + r.height / 2 - wRect.top,
+          };
+        });
+
+        const d = catmullRom(pts);
+        pathBg.setAttribute("d", d);
+        pathMain.setAttribute("d", d);
+
+        pathLength = pathMain.getTotalLength();
+        pathMain.style.strokeDasharray = pathLength;
+        pathMain.style.strokeDashoffset = pathLength;
+      }
+
+      function animatePathOnScroll() {
+        const pathMain = document.getElementById("pathMain");
+        const wrapper = document.getElementById("timelineWrapper");
+        if (!pathMain || !wrapper || pathLength === 0) return;
+
+        const wRect = wrapper.getBoundingClientRect();
+        const vh = window.innerHeight;
+        const start = vh * 0.7;
+        const end = wRect.height - vh * 0.25;
+        const progress = Math.max(
+          0,
+          Math.min(1, (-wRect.top + start) / (end - start)),
+        );
+
+        pathMain.style.strokeDashoffset = pathLength * (1 - progress);
+      }
+
+      /* =============================================
+           Scroll reveal des cartes timeline
+           ============================================= */
+      const revealObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) e.target.classList.add("visible");
+          });
+        },
+        { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
+      );
+
+      document
+        .querySelectorAll(".timeline-entry")
+        .forEach((el) => revealObs.observe(el));
+
+      /* =============================================
+           Initialisation
+           ============================================= */
+      let resizeTimer;
+      function rebuild() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          buildPath();
+          animatePathOnScroll();
+        }, 120);
+      }
+
+      window.addEventListener("load", () => setTimeout(rebuild, 250));
+      window.addEventListener("scroll", animatePathOnScroll, { passive: true });
+      window.addEventListener("resize", rebuild);
+
+      // Reconstruire quand les images se chargent (changent la hauteur)
+      document.querySelectorAll(".timeline-card img").forEach((img) => {
+        if (!img.complete) img.addEventListener("load", rebuild);
+      });
+    </script>
+  </body>
+</html>
