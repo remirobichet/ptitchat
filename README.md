@@ -132,9 +132,6 @@ ipconfig /flushdns
 |       |-- signup.vue
 |       |-- cats.vue
 |       `-- photos.vue
-|-- server/api/admin/
-|   |-- create-cat.post.ts
-|   `-- upload-photo.post.ts
 `-- types/models.ts
 ```
 
