@@ -73,13 +73,8 @@ const currentPageLabel = computed(() => {
 watch(
   () => [hasCats.value, route.path],
   async ([hasAnyCats, path]) => {
-    if (!hasAnyCats && path !== "/admin/chat/new") {
+    if (!hasAnyCats && path !== "/admin" && path !== "/admin/chat/new") {
       await navigateTo("/admin/chat/new");
-      return;
-    }
-
-    if (hasAnyCats && path === "/admin") {
-      await navigateTo("/admin/chat");
     }
   },
   { immediate: true },
