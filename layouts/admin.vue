@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ClientResponseError } from "pocketbase";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -21,11 +22,27 @@ const auth = useAuth();
 const selectedCatId = useState<string | null>("admin-selected-cat", () => null);
 
 const { data: cats } = await useAsyncData("admin-sidebar-cats", async () => {
-  const page = await pb
-    .collection("cats")
-    .getList<CatRecord>(1, 100, { sort: "+name" });
-  return page.items;
+  try {
+    const page = await pb
+      .collection("cats")
+      .getList<CatRecord>(1, 100, { sort: "+name" });
+    return page.items;
+  } catch (error) {
+    if (
+      error instanceof ClientResponseError &&
+      [401, 403].includes(error.status)
+    ) {
+      return null;
+    }
+
+    throw error;
+  }
 });
+
+if (cats.value === null) {
+  auth.logout();
+  await navigateTo("/admin/login", { replace: true });
+}
 
 const userEmail = computed(() => auth.user.value?.email || "admin@ptitchat");
 
@@ -87,44 +104,53 @@ async function onLogout() {
 </script>
 
 <template>
-  <SidebarProvider>
-    <AppSidebar
-      :cats="cats || []"
-      :selected-cat-id="selectedCatId"
-      :user-email="userEmail"
-      @update:selected-cat-id="selectedCatId = $event"
-      @logout="onLogout"
-    />
+  <ClientOnly>
+    <SidebarProvider>
+      <AppSidebar
+        :cats="cats || []"
+        :selected-cat-id="selectedCatId"
+        :user-email="userEmail"
+        @update:selected-cat-id="selectedCatId = $event"
+        @logout="onLogout"
+      />
 
-    <SidebarInset>
-      <header
-        class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12"
-      >
-        <div class="flex items-center gap-2 px-4">
-          <SidebarTrigger class="-ml-1" />
-          <Separator
-            orientation="vertical"
-            class="mr-2 data-[orientation=vertical]:h-4"
-          />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem class="hidden md:block">
-                <span class="text-muted-foreground">
-                  {{ selectedCatName || "Administration" }}
-                </span>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator class="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{{ currentPageLabel }}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+      <SidebarInset>
+        <header
+          class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12"
+        >
+          <div class="flex items-center gap-2 px-4">
+            <SidebarTrigger class="-ml-1" />
+            <Separator
+              orientation="vertical"
+              class="mr-2 data-[orientation=vertical]:h-4"
+            />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem class="hidden md:block">
+                  <span class="text-muted-foreground">
+                    {{ selectedCatName || "Administration" }}
+                  </span>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator class="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>{{ currentPageLabel }}</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+        </header>
+
+        <div class="flex flex-1 flex-col gap-4 p-4 pt-0 md:p-6 md:pt-0">
+          <slot />
         </div>
-      </header>
+      </SidebarInset>
+    </SidebarProvider>
 
-      <div class="flex flex-1 flex-col gap-4 p-4 pt-0 md:p-6 md:pt-0">
-        <slot />
+    <template #fallback>
+      <div class="flex min-h-svh flex-col gap-4 p-4 md:p-6">
+        <div class="h-16 rounded-lg border bg-card" />
+        <div class="flex-1 rounded-lg border bg-card" />
       </div>
-    </SidebarInset>
-  </SidebarProvider>
+    </template>
+  </ClientOnly>
 </template>
