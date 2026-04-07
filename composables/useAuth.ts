@@ -4,6 +4,8 @@ type AuthUser = {
   verified: boolean;
 };
 
+let clientAuthSyncRegistered = false;
+
 function extractAuthUser(
   model: Record<string, unknown> | null,
 ): AuthUser | null {
@@ -20,25 +22,32 @@ function extractAuthUser(
 
 export function useAuth() {
   const pb = usePocketbase();
-  const authSyncRegistered = useState<boolean>(
-    "auth-sync-registered",
-    () => false,
-  );
   const user = useState<AuthUser | null>("auth-user", () => {
+    if (!pb.authStore.isValid) {
+      return null;
+    }
+
     const model = pb.authStore.model as Record<string, unknown> | null;
     return extractAuthUser(model);
   });
 
-  if (!authSyncRegistered.value) {
+  if (import.meta.client && !clientAuthSyncRegistered) {
     pb.authStore.onChange(() => {
+      if (!pb.authStore.isValid) {
+        user.value = null;
+        return;
+      }
+
       const model = pb.authStore.model as Record<string, unknown> | null;
       user.value = extractAuthUser(model);
     });
-    authSyncRegistered.value = true;
+    clientAuthSyncRegistered = true;
   }
 
-  const isAuthenticated = computed(() => !!user.value);
-  const canAccessAdmin = computed(() => user.value?.verified === true);
+  const isAuthenticated = computed(() => pb.authStore.isValid && !!user.value);
+  const canAccessAdmin = computed(
+    () => pb.authStore.isValid && user.value?.verified === true,
+  );
 
   async function login(email: string, password: string) {
     const result = await pb
