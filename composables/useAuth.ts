@@ -24,22 +24,37 @@ export function useAuth() {
   const pb = usePocketbase();
   const user = useState<AuthUser | null>("auth-user", () => {
     if (!pb.authStore.isValid) {
+      console.log("[useAuth] initialize user: authStore invalid", {
+        side: import.meta.server ? "server" : "client",
+      });
       return null;
     }
 
     const model = pb.authStore.model as Record<string, unknown> | null;
+    console.log("[useAuth] initialize user from authStore", {
+      side: import.meta.server ? "server" : "client",
+      isValid: pb.authStore.isValid,
+      model,
+    });
     return extractAuthUser(model);
   });
 
   if (import.meta.client && !clientAuthSyncRegistered) {
     pb.authStore.onChange(() => {
+      console.log("[useAuth][client] authStore.onChange", {
+        isValid: pb.authStore.isValid,
+        model: pb.authStore.model,
+      });
+
       if (!pb.authStore.isValid) {
         user.value = null;
+        console.log("[useAuth][client] user cleared because authStore invalid");
         return;
       }
 
       const model = pb.authStore.model as Record<string, unknown> | null;
       user.value = extractAuthUser(model);
+      console.log("[useAuth][client] user updated from authStore", user.value);
     });
     clientAuthSyncRegistered = true;
   }
@@ -50,9 +65,16 @@ export function useAuth() {
   );
 
   async function login(email: string, password: string) {
+    console.log("[useAuth] login start", { email });
     const result = await pb
       .collection("users")
       .authWithPassword(email, password);
+
+    console.log("[useAuth] login success", {
+      email,
+      record: result.record,
+      tokenValid: pb.authStore.isValid,
+    });
 
     const nextUser: AuthUser = {
       id: result.record.id,
@@ -61,6 +83,7 @@ export function useAuth() {
     };
 
     if (!nextUser.verified) {
+      console.log("[useAuth] login rejected: user not verified", nextUser);
       pb.authStore.clear();
       user.value = null;
       throw new Error(
@@ -69,10 +92,19 @@ export function useAuth() {
     }
 
     user.value = nextUser;
+    console.log("[useAuth] login completed", {
+      user: user.value,
+      tokenValid: pb.authStore.isValid,
+    });
     return user.value;
   }
 
   function logout() {
+    console.log("[useAuth] logout", {
+      side: import.meta.server ? "server" : "client",
+      user: user.value,
+      tokenValid: pb.authStore.isValid,
+    });
     pb.authStore.clear();
     user.value = null;
   }

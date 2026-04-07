@@ -21,19 +21,30 @@ async function onSubmit() {
   loading.value = true;
   errorMessage.value = "";
 
+  console.log("[LoginForm] submit start", { email: form.email });
+
   try {
     await auth.login(form.email, form.password);
 
+    console.log("[LoginForm] login resolved", {
+      user: auth.user.value,
+      canAccessAdmin: auth.canAccessAdmin.value,
+    });
+
     if (import.meta.client) {
+      console.log("[LoginForm] redirect client -> /admin");
       window.location.assign("/admin");
       return;
     }
 
+    console.log("[LoginForm] redirect server -> /admin");
     await navigateTo("/admin", { replace: true });
   } catch (error) {
+    console.log("[LoginForm] login failed", error);
     errorMessage.value =
       error instanceof Error ? error.message : "Connexion impossible";
   } finally {
+    console.log("[LoginForm] submit end", { loading: false });
     loading.value = false;
   }
 }
