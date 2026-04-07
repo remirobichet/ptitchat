@@ -26,25 +26,16 @@ const { data: cats } = await useAsyncData("admin-index-cats", async () => {
 });
 
 if (cats.value === null) {
-  console.log(
-    "[pages/admin/index] cats fetch returned null, redirecting to login",
-  );
   useAuth().logout();
   await navigateTo("/admin/login", { replace: true });
 }
 
 if (cats.value?.length) {
-  console.log("[pages/admin/index] cats found, redirecting to /admin/chat", {
-    count: cats.value.length,
-  });
   if (!selectedCatId.value) {
     selectedCatId.value = cats.value[0].id;
   }
   await navigateTo("/admin/chat");
 } else {
-  console.log(
-    "[pages/admin/index] no cats found, redirecting to /admin/chat/new",
-  );
   await navigateTo("/admin/chat/new");
 }
 </script>

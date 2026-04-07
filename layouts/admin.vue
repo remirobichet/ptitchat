@@ -40,13 +40,6 @@ const { data: cats } = await useAsyncData("admin-sidebar-cats", async () => {
 });
 
 if (cats.value === null) {
-  console.log(
-    "[layouts/admin] cats fetch returned null, redirecting to login",
-    {
-      side: import.meta.server ? "server" : "client",
-      user: auth.user.value,
-    },
-  );
   auth.logout();
   await navigateTo("/admin/login", { replace: true });
 }
@@ -97,14 +90,7 @@ const currentPageLabel = computed(() => {
 watch(
   () => [hasCats.value, route.path],
   async ([hasAnyCats, path]) => {
-    console.log("[layouts/admin] watch route/cats", {
-      hasAnyCats,
-      path,
-      selectedCatId: selectedCatId.value,
-    });
-
     if (!hasAnyCats && path !== "/admin" && path !== "/admin/chat/new") {
-      console.log("[layouts/admin] redirecting to /admin/chat/new");
       await navigateTo("/admin/chat/new");
     }
   },
@@ -112,7 +98,6 @@ watch(
 );
 
 async function onLogout() {
-  console.log("[layouts/admin] onLogout");
   auth.logout();
   await navigateTo("/admin/login");
 }

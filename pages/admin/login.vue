@@ -5,17 +5,10 @@ if (import.meta.client) {
   watch(
     () => auth.canAccessAdmin.value,
     async (canAccessAdmin) => {
-      console.log("[pages/admin/login] watch canAccessAdmin", {
-        side: "client",
-        canAccessAdmin,
-        user: auth.user.value,
-      });
-
       if (!canAccessAdmin) {
         return;
       }
 
-      console.log("[pages/admin/login] navigate client -> /admin");
       await navigateTo("/admin", { replace: true });
     },
     { immediate: true },
