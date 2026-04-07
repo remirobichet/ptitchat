@@ -31,13 +31,7 @@ async function onSubmit() {
       canAccessAdmin: auth.canAccessAdmin.value,
     });
 
-    if (import.meta.client) {
-      console.log("[LoginForm] redirect client -> /admin");
-      window.location.assign("/admin");
-      return;
-    }
-
-    console.log("[LoginForm] redirect server -> /admin");
+    console.log("[LoginForm] navigate -> /admin");
     await navigateTo("/admin", { replace: true });
   } catch (error) {
     console.log("[LoginForm] login failed", error);
