@@ -70,6 +70,14 @@ const {
   },
 );
 
+console.error("[public-page] cat request state", {
+  hostname,
+  catSlug,
+  pending: catPending.value,
+  error: catError.value,
+  cat: cat.value,
+});
+
 const {
   data: photos,
   pending: photosPending,
@@ -89,6 +97,13 @@ const {
   { watch: [cat] },
 );
 
+console.error("[public-page] photos request state", {
+  catId: cat.value?.id,
+  pending: photosPending.value,
+  error: photosError.value,
+  total: photos.value?.length,
+});
+
 const {
   data: storySections,
   pending: storyPending,
@@ -107,6 +122,13 @@ const {
   },
   { watch: [cat] },
 );
+
+console.error("[public-page] story request state", {
+  catId: cat.value?.id,
+  pending: storyPending.value,
+  error: storyError.value,
+  total: storySections.value?.length,
+});
 
 const hasStorySections = computed(() => Boolean(storySections.value?.length));
 
