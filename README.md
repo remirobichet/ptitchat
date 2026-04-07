@@ -95,6 +95,21 @@ ipconfig /flushdns
 - `pnpm test:unit` - run Vitest in watch mode
 - `pnpm test:e2e` - run Playwright tests
 
+## Rendering mode
+
+- The app runs with `ssr: false` and is fully client-rendered.
+- Public cat pages are resolved in the browser from the current hostname.
+- This reduces SSR-related deployment issues, but public pages no longer have server-rendered HTML.
+
+## Coolify notes
+
+- Set `NUXT_PUBLIC_BASE_DOMAIN` to your parent domain, for example `ptitchat.com`.
+- Route both the root domain and cat subdomains to the same application.
+- For Coolify + Traefik, that typically means:
+- `https://ptitchat.com`
+- `https://*.ptitchat.com`
+- wildcard SSL if you want HTTPS on cat subdomains
+
 ## Current structure
 
 ```
