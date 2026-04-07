@@ -43,6 +43,11 @@ const {
     if (!catSlug) {
       return null;
     }
+    console.error(`👀 @RR catSlug`, catSlug);
+    console.error(
+      `👀 @RR escapeFilterValue(catSlug)`,
+      escapeFilterValue(catSlug),
+    );
 
     try {
       return await pb
