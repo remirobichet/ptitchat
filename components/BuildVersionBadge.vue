@@ -14,9 +14,7 @@ const props = withDefaults(
 
 const runtimeConfig = useRuntimeConfig();
 
-const deploymentVersion = computed(
-  () => runtimeConfig.public.deploymentVersion || "dev",
-);
+const commitHash = computed(() => runtimeConfig.public.commitHash || "dev");
 </script>
 
 <template>
@@ -37,7 +35,7 @@ const deploymentVersion = computed(
           : 'rounded-full border border-border/70 bg-background/85 px-3 py-1 text-xs text-muted-foreground shadow-sm backdrop-blur'
       "
     >
-      Version {{ deploymentVersion }}
+      Version {{ commitHash }}
     </div>
   </div>
 </template>
