@@ -105,6 +105,8 @@ ipconfig /flushdns
 
 - Set `NUXT_PUBLIC_BASE_DOMAIN` to your parent domain, for example `ptitchat.com`.
 - Route both the root domain and cat subdomains to the same application.
+- The version badge is computed at Docker build time. Because `.git` is excluded by `.dockerignore`, pass either `COMMIT_SHA` or `NUXT_PUBLIC_APP_VERSION` as a Docker build arg/environment variable in your deployment platform.
+- Example: set `COMMIT_SHA` to your CI/deployment commit SHA, or set `NUXT_PUBLIC_APP_VERSION` to a release tag like `2026-04-09.1`.
 - For Coolify + Traefik, that typically means:
 - `https://ptitchat.com`
 - `https://*.ptitchat.com`

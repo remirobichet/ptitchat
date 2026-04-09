@@ -16,6 +16,11 @@ FROM node:22.20.0-bookworm-slim AS build
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
+ARG COMMIT_SHA
+ARG NUXT_PUBLIC_APP_VERSION
+ENV COMMIT_SHA=$COMMIT_SHA
+ENV NUXT_PUBLIC_APP_VERSION=$NUXT_PUBLIC_APP_VERSION
+
 RUN corepack enable && corepack prepare pnpm@10.20.0 --activate
 
 WORKDIR /app
