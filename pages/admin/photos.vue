@@ -15,10 +15,12 @@ definePageMeta({
 });
 
 const pb = usePocketbase();
+const { resizeImageForUpload } = useImageResize();
 const selectedCatId = useState<string | null>("admin-selected-cat", () => null);
 const selectedFiles = ref<File[]>([]);
 const fileInputKey = ref(0);
 const isUploading = ref(false);
+const uploadStage = ref<"idle" | "preparing" | "uploading">("idle");
 const uploadError = ref("");
 const uploadSuccess = ref("");
 const captionDrafts = ref<Record<string, string>>({});
@@ -163,12 +165,24 @@ async function onUploadPhotos() {
   }
 
   isUploading.value = true;
+  uploadStage.value = "preparing";
   uploadError.value = "";
   uploadSuccess.value = "";
 
   try {
-    await Promise.all(
+    const filesToUpload = await Promise.all(
       selectedFiles.value.map((file) =>
+        resizeImageForUpload(file, {
+          maxWidth: 1600,
+          quality: 0.82,
+        }),
+      ),
+    );
+
+    uploadStage.value = "uploading";
+
+    await Promise.all(
+      filesToUpload.map((file) =>
         pb.collection("photos").create<PhotoRecord>({
           cat: selectedCatId.value as string,
           image: file,
@@ -192,6 +206,7 @@ async function onUploadPhotos() {
         : "Impossible de téléverser les photos";
   } finally {
     isUploading.value = false;
+    uploadStage.value = "idle";
   }
 }
 </script>
@@ -230,13 +245,19 @@ async function onUploadPhotos() {
 
           <div class="grid gap-2">
             <p class="text-sm text-muted-foreground">
-              Les images sont téléversées d'abord, puis les légendes sont
-              ajoutées individuellement.
+              Les images trop grandes sont réduites à 1600 px de large avant
+              téléversement, puis les légendes sont ajoutées individuellement.
             </p>
           </div>
 
           <Button type="submit" :disabled="!selectedCatId || isUploading">
-            {{ isUploading ? "Téléversement..." : "Ajouter les photos" }}
+            {{
+              uploadStage === "preparing"
+                ? "Préparation des images..."
+                : uploadStage === "uploading"
+                  ? "Téléversement..."
+                  : "Ajouter les photos"
+            }}
           </Button>
 
           <p v-if="uploadSuccess" class="text-sm text-green-600">
