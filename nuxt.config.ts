@@ -2,9 +2,8 @@ import { execSync } from "node:child_process";
 
 const resolveGitCommitHash = () => {
   const commitHash =
-    process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ||
-    process.env.COMMIT_SHA?.slice(0, 7) ||
-    process.env.SOURCE_COMMIT?.slice(0, 7);
+    process.env.NUXT_PUBLIC_COMMIT_HASH?.slice(0, 7) ||
+    process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7);
 
   if (commitHash) {
     return commitHash;
