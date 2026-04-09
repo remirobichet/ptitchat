@@ -35,6 +35,7 @@ const emit = defineEmits<{
     </SidebarContent>
 
     <SidebarFooter>
+      <BuildVersionBadge inline class="group-data-[collapsible=icon]:hidden" />
       <NavUser :email="props.userEmail" @logout="emit('logout')" />
     </SidebarFooter>
 

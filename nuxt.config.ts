@@ -1,3 +1,17 @@
+import { execSync } from "node:child_process";
+
+const deploymentVersion =
+  process.env.NUXT_PUBLIC_APP_VERSION ||
+  process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ||
+  process.env.COMMIT_SHA?.slice(0, 7) ||
+  (() => {
+    try {
+      return execSync("git rev-parse --short HEAD").toString().trim();
+    } catch {
+      return "dev";
+    }
+  })();
+
 export default defineNuxtConfig({
   ssr: false,
   compatibilityDate: "2024-12-01",
@@ -17,6 +31,7 @@ export default defineNuxtConfig({
       pocketbaseUrl:
         process.env.NUXT_PUBLIC_POCKETBASE_URL || "http://127.0.0.1:8090",
       baseDomain: process.env.NUXT_PUBLIC_BASE_DOMAIN || "",
+      deploymentVersion,
     },
   },
 });
