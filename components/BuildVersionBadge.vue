@@ -14,7 +14,9 @@ const props = withDefaults(
 
 const runtimeConfig = useRuntimeConfig();
 
-const commitHash = computed(() => runtimeConfig.public.commitHash || "dev");
+const commitHash = computed(
+  () => runtimeConfig.public.commitHash?.slice(0, 7) || "dev",
+);
 </script>
 
 <template>
