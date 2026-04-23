@@ -30,6 +30,9 @@ const captionSuccess = ref<Record<string, string>>({});
 const coverSavingId = ref<string | null>(null);
 const coverError = ref("");
 const coverSuccess = ref("");
+const deletingPhotoId = ref<string | null>(null);
+const deleteError = ref("");
+const deleteSuccess = ref("");
 
 const { data: currentCat, refresh: refreshCurrentCat } = await useAsyncData(
   () => `admin-photos-cat-${selectedCatId.value || "none"}`,
@@ -150,6 +153,46 @@ async function onSaveCaption(photoId: string) {
         : "Impossible de mettre à jour la légende";
   } finally {
     captionSaving.value[photoId] = false;
+  }
+}
+
+async function onDeletePhoto(photo: PhotoRecord) {
+  if (!selectedCatId.value) {
+    return;
+  }
+
+  const shouldDelete = window.confirm(
+    "Supprimer cette photo ? Cette action est irréversible.",
+  );
+
+  if (!shouldDelete) {
+    return;
+  }
+
+  deletingPhotoId.value = photo.id;
+  deleteError.value = "";
+  deleteSuccess.value = "";
+
+  try {
+    if (isCurrentCover(photo)) {
+      await pb.collection("cats").update(selectedCatId.value, {
+        coverPhoto: null,
+      });
+    }
+
+    await pb.collection("photos").delete(photo.id);
+    deleteSuccess.value = "Photo supprimée.";
+
+    await Promise.all([
+      refresh(),
+      refreshCurrentCat(),
+      refreshNuxtData("admin-sidebar-cats"),
+    ]);
+  } catch (err) {
+    deleteError.value =
+      err instanceof Error ? err.message : "Impossible de supprimer la photo";
+  } finally {
+    deletingPhotoId.value = null;
   }
 }
 
@@ -321,7 +364,9 @@ async function onUploadPhotos() {
                   type="button"
                   variant="secondary"
                   :disabled="
-                    coverSavingId === photo.id || isCurrentCover(photo)
+                    coverSavingId === photo.id ||
+                    deletingPhotoId === photo.id ||
+                    isCurrentCover(photo)
                   "
                   @click="onSetCoverPhoto(photo.id)"
                 >
@@ -331,6 +376,18 @@ async function onUploadPhotos() {
                       : isCurrentCover(photo)
                         ? "Couverture actuelle"
                         : "Définir comme couverture"
+                  }}
+                </Button>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  :disabled="deletingPhotoId === photo.id"
+                  @click="onDeletePhoto(photo)"
+                >
+                  {{
+                    deletingPhotoId === photo.id
+                      ? "Suppression..."
+                      : "Supprimer"
                   }}
                 </Button>
               </div>
@@ -355,6 +412,12 @@ async function onUploadPhotos() {
         </p>
         <p v-if="coverError" class="mt-3 text-sm text-destructive">
           {{ coverError }}
+        </p>
+        <p v-if="deleteSuccess" class="mt-3 text-sm text-green-600">
+          {{ deleteSuccess }}
+        </p>
+        <p v-if="deleteError" class="mt-3 text-sm text-destructive">
+          {{ deleteError }}
         </p>
       </CardContent>
     </Card>
